@@ -3,28 +3,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Search, Send, Pill, MapPin, AlertTriangle, Sparkles, Bot, User, Menu } from "lucide-react";
 import logo from "@/assets/logo.jpg";
 import SearchHistory from "./SearchHistory";
+import { Medicine, Pharmacy, Message, PharmacyApiResponse } from "@/Types/MainTypes";
 
-interface Message {
-  id: string;
-  role: "user" | "assistant";
-  content: string;
-  pharmacies?: Pharmacy[];
-  sideEffects?: string[];
-}
 
-interface Pharmacy {
-  name: string;
-  address: string;
-  distance: string;
-  available: boolean;
-  price: string;
-}
-
-const MOCK_PHARMACIES: Pharmacy[] = [
-  { name: "Pharmacie Centrale", address: "12 Rue Didouche Mourad, Alger", distance: "0.3 km", available: true, price: "450 DZD" },
-  { name: "Pharmacie El Amel", address: "45 Bd Mohamed V, Oran", distance: "1.2 km", available: true, price: "480 DZD" },
-  { name: "Pharmacie du Quartier", address: "8 Rue Ben M'hidi, Constantine", distance: "2.5 km", available: false, price: "460 DZD" },
-];
 
 const MOCK_RESPONSES: Record<string, { text: string; sideEffects: string[] }> = {
   default: {
