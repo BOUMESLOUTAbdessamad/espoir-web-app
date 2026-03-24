@@ -96,8 +96,32 @@ const MedicineSearch = () => {
 
   return (
     <div className="flex flex-col h-screen max-w-3xl mx-auto px-4">
+      <SearchHistory
+        history={searchHistory}
+        onSelect={handleSearch}
+        onClear={() => {
+          setSearchHistory([]);
+          localStorage.removeItem("search-history");
+        }}
+        onRemove={(index) => {
+          setSearchHistory((prev) => {
+            const updated = prev.filter((_, i) => i !== index);
+            localStorage.setItem("search-history", JSON.stringify(updated));
+            return updated;
+          });
+        }}
+        isOpen={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+      />
+
       {/* Header */}
       <header className="flex items-center gap-3 py-4 shrink-0">
+        <button
+          onClick={() => setSidebarOpen(true)}
+          className="w-8 h-8 rounded-lg hover:bg-muted flex items-center justify-center transition-colors"
+        >
+          <Menu className="w-4 h-4 text-muted-foreground" />
+        </button>
         <img src={logo} alt="Espoir DZ" className="w-9 h-9 rounded-xl" />
         <h1 className="text-lg font-bold text-foreground">
           Espoir <span className="text-gradient">DZ</span>
