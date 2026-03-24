@@ -44,7 +44,7 @@ const MedicineSearch = () => {
   });
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-
+  
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
@@ -235,11 +235,12 @@ const MedicineSearch = () => {
                                   ? "bg-emerald-100 text-emerald-700"
                                   : "bg-red-100 text-red-600"
                               }`}>
-                                {pharmacy.available ? "In Stock" : "Unavailable"}
+                                {pharmacy.available ? "Available" : "Unavailable"}
                               </div>
-                              {pharmacy.available && (
+
+                              {/* {pharmacy.available && (
                                 <div className="text-xs font-semibold text-foreground mt-1">{pharmacy.price}</div>
-                              )}
+                              )} */}
                             </div>
                           </div>
                         ))}
