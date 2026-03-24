@@ -6,6 +6,7 @@ import SearchHistory from "./SearchHistory";
 import { Medicine, Pharmacy, Message, PharmacyApiResponse } from "@/Types/MainTypes";
 
 
+const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL ?? "http://localhost:5000/api/v1").replace(/\/$/, "");
 
 const MOCK_RESPONSES: Record<string, { text: string; sideEffects: string[] }> = {
   default: {
