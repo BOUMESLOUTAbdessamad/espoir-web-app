@@ -1,7 +1,8 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, Send, Pill, MapPin, AlertTriangle, Sparkles, Bot, User } from "lucide-react";
+import { Search, Send, Pill, MapPin, AlertTriangle, Sparkles, Bot, User, Menu } from "lucide-react";
 import logo from "@/assets/logo.jpg";
+import SearchHistory from "./SearchHistory";
 
 interface Message {
   id: string;
@@ -37,16 +38,31 @@ const MedicineSearch = () => {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showLanding, setShowLanding] = useState(true);
+  const [searchHistory, setSearchHistory] = useState<string[]>(() => {
+    const saved = localStorage.getItem("search-history");
+    return saved ? JSON.parse(saved) : [];
+  });
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  const addToHistory = useCallback((query: string) => {
+    setSearchHistory((prev) => {
+      const filtered = prev.filter((q) => q.toLowerCase() !== query.toLowerCase());
+      const updated = [query, ...filtered].slice(0, 30);
+      localStorage.setItem("search-history", JSON.stringify(updated));
+      return updated;
+    });
+  }, []);
+
   const handleSearch = async (query: string) => {
     if (!query.trim()) return;
 
     setShowLanding(false);
+    addToHistory(query.trim());
     const userMessage: Message = {
       id: Date.now().toString(),
       role: "user",
@@ -80,8 +96,32 @@ const MedicineSearch = () => {
 
   return (
     <div className="flex flex-col h-screen max-w-3xl mx-auto px-4">
+      <SearchHistory
+        history={searchHistory}
+        onSelect={handleSearch}
+        onClear={() => {
+          setSearchHistory([]);
+          localStorage.removeItem("search-history");
+        }}
+        onRemove={(index) => {
+          setSearchHistory((prev) => {
+            const updated = prev.filter((_, i) => i !== index);
+            localStorage.setItem("search-history", JSON.stringify(updated));
+            return updated;
+          });
+        }}
+        isOpen={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+      />
+
       {/* Header */}
       <header className="flex items-center gap-3 py-4 shrink-0">
+        <button
+          onClick={() => setSidebarOpen(true)}
+          className="w-8 h-8 rounded-lg hover:bg-muted flex items-center justify-center transition-colors"
+        >
+          <Menu className="w-4 h-4 text-muted-foreground" />
+        </button>
         <img src={logo} alt="Espoir DZ" className="w-9 h-9 rounded-xl" />
         <h1 className="text-lg font-bold text-foreground">
           Espoir <span className="text-gradient">DZ</span>
