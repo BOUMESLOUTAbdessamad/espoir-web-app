@@ -1,7 +1,8 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, Send, Pill, MapPin, AlertTriangle, Sparkles, Bot, User } from "lucide-react";
+import { Search, Send, Pill, MapPin, AlertTriangle, Sparkles, Bot, User, Menu } from "lucide-react";
 import logo from "@/assets/logo.jpg";
+import SearchHistory from "./SearchHistory";
 
 interface Message {
   id: string;
