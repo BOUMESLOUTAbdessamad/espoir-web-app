@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, Send, Pill, MapPin, AlertTriangle, Sparkles, Bot, User, Menu } from "lucide-react";
+import { Send, Pill, MapPin, AlertTriangle, Sparkles, Bot, User, Menu } from "lucide-react";
 import logo from "@/assets/logo.jpg";
 import SearchHistory from "./SearchHistory";
 import { Medicine, Pharmacy, Message, PharmacyApiResponse } from "@/Types/MainTypes";
@@ -15,6 +15,92 @@ const MOCK_RESPONSES: Record<string, { text: string; sideEffects: string[] }> = 
   },
 };
 
+const getMedicinesFromPayload = (payload: unknown): Medicine[] => {
+  if (Array.isArray(payload)) {
+    return payload as Medicine[];
+  }
+
+  if (!payload || typeof payload !== "object") {
+    return [];
+  }
+
+  const typed = payload as Record<string, unknown>;
+  if (Array.isArray(typed.medicines)) {
+    return typed.medicines as Medicine[];
+  }
+
+  if (Array.isArray(typed.data)) {
+    return typed.data as Medicine[];
+  }
+
+  return [];
+};
+
+const normalizePharmacy = (pharmacy: PharmacyApiResponse["pharmacies"][number]): Pharmacy => {
+  const cityWilaya = [pharmacy.city, pharmacy.wilaya].filter(Boolean).join(", ");
+  const availability = String(pharmacy.status ?? "").toLowerCase();
+
+  return {
+    id: pharmacy.id,
+    name: pharmacy.name,
+    address: pharmacy.address || cityWilaya || "Address not provided",
+    distance: cityWilaya || "Location not provided",
+    available: !["inactive", "closed", "unavailable", "false", "0"].includes(availability),
+    price: "N/A",
+  };
+};
+
+const tryResolveMedicineId = async (query: string): Promise<number | null> => {
+  const trimmed = query.trim();
+  if (!trimmed) {
+    return null;
+  }
+
+  if (/^\d+$/.test(trimmed)) {
+    return Number(trimmed);
+  }
+
+  const encoded = encodeURIComponent(trimmed);
+
+
+    const url =`${API_BASE_URL}/medicines?q=${encoded}`;
+
+
+    try {
+      const res = await fetch(url);
+      if (!res.ok) {
+        throw new Error(`Failed to fetch medicine by ID with query: ${trimmed}`);
+      }
+
+      const payload = (await res.json()) as unknown;
+      const medicines = getMedicinesFromPayload(payload);
+      console.log(medicines)
+      const exact = medicines.find((med) => {
+        const values = [med.mark, med.dci, med.name]
+          .filter(Boolean)
+          .map((value) => String(value).toLowerCase());
+        return values.includes(trimmed.toLowerCase());
+      });
+
+      const partial = medicines.find((med) => {
+        const values = [med.mark, med.dci, med.name]
+          .filter(Boolean)
+          .map((value) => String(value).toLowerCase());
+        return values.some((value) => value.includes(trimmed.toLowerCase()));
+      });
+
+      const found = exact ?? partial ?? medicines[0];
+      if (found?.id) {
+        return found.id;
+      }
+    } catch {
+      // Try the next candidate endpoint shape.
+    }
+  
+
+  return null;
+};
+
 const MedicineSearch = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
@@ -26,7 +112,7 @@ const MedicineSearch = () => {
   });
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  
+
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
@@ -45,36 +131,95 @@ const MedicineSearch = () => {
 
     setShowLanding(false);
     addToHistory(query.trim());
+
     const userMessage: Message = {
       id: Date.now().toString(),
       role: "user",
       content: query,
     };
+
     setMessages((prev) => [...prev, userMessage]);
     setInput("");
     setIsLoading(true);
 
     // Simulate AI response
     await new Promise((r) => setTimeout(r, 1500));
+    try {
+      const medicineId = await tryResolveMedicineId(query);
 
-    const response = MOCK_RESPONSES.default;
-    const assistantMessage: Message = {
-      id: (Date.now() + 1).toString(),
-      role: "assistant",
-      content: `**${query}** — ${response.text}`,
-      pharmacies: MOCK_PHARMACIES,
-      sideEffects: response.sideEffects,
-    };
-    setMessages((prev) => [...prev, assistantMessage]);
-    setIsLoading(false);
+      if (!medicineId) {
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: (Date.now() + 1).toString(),
+            role: "assistant",
+            content: `I could not match **${query}** to a medicine in the database.`,
+          },
+        ]);
+        return;
+      }
+
+      const res = await fetch(`${API_BASE_URL}/medicines/${medicineId}/pharmacies?limit=5`);
+      const payload = (await res.json()) as PharmacyApiResponse | { error?: string };
+
+      if (!res.ok) {
+        const errorMessage = "error" in payload ? payload.error : "Failed to fetch pharmacies.";
+
+        if (
+          res.status === 404 ||
+          String(errorMessage ?? "")
+            .toLowerCase()
+            .includes("medicine not found")
+        ) {
+          setMessages((prev) => [
+            ...prev,
+            {
+              id: (Date.now() + 1).toString(),
+              role: "assistant",
+              content: `Medicine **${query}** was not found in the database.`,
+            },
+          ]);
+          return;
+        }
+
+        throw new Error(errorMessage || "Failed to fetch pharmacies.");
+      }
+
+      const pharmacies = (payload as PharmacyApiResponse).pharmacies.map(normalizePharmacy);
+      const response = MOCK_RESPONSES.default;
+      const medicineLabel =
+        (payload as PharmacyApiResponse).medicine_mark || (payload as PharmacyApiResponse).medicine_dci || query;
+
+      const assistantMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        role: "assistant",
+        content:
+          pharmacies.length > 0
+            ? `**${medicineLabel}** - ${response.text}`
+            : `**${medicineLabel}** - no pharmacy currently has this medicine listed as available.`,
+        pharmacies,
+        sideEffects: response.sideEffects,
+      };
+
+      setMessages((prev) => [...prev, assistantMessage]);
+    } catch (error) {
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: (Date.now() + 1).toString(),
+          role: "assistant",
+          content: `Could not load pharmacies for **${query}**. ${error instanceof Error ? error.message : "Please try again."}`,
+        },
+      ]);
+    } finally {
+      setIsLoading(false);
+    }
   };
+  
+  const haddedSugestions = ["Doliprane 1000mg", "Amoxicilline 500mg", "Omeprazole 20mg", "Vitamine D3"];
+  const localData = localStorage.getItem('search-history');
+  const suggestions = haddedSugestions.concat(localData ? JSON.parse(localData as string) : []).slice(0, 10);
 
-  const suggestions = [
-    "Doliprane 1000mg",
-    "Amoxicilline 500mg",
-    "Oméprazole 20mg",
-    "Vitamine D3",
-  ];
 
   return (
     <div className="flex flex-col h-screen max-w-3xl mx-auto px-4">
@@ -106,7 +251,7 @@ const MedicineSearch = () => {
         </button>
         <img src={logo} alt="Espoir DZ" className="w-9 h-9 rounded-xl" />
         <h1 className="text-lg font-bold text-foreground">
-          Espoir <span className="text-gradient">DZ</span>
+          Espoir <span className="text-gradient">AI</span>
         </h1>
       </header>
 
@@ -131,11 +276,9 @@ const MedicineSearch = () => {
                 </div>
               </motion.div>
               <div>
-                <h2 className="text-2xl font-bold text-foreground mb-2">
-                  Avicenna Agent
-                </h2>
+                <h2 className="text-2xl font-bold text-foreground mb-2">Avicenna</h2>
                 <p className="text-muted-foreground text-sm max-w-md">
-                  Search for any medicine — find availability in nearby pharmacies and learn about side effects.
+                  Search for any medicine - find availability in nearby pharmacies and learn about side effects.
                 </p>
               </div>
               <div className="flex flex-wrap gap-2 justify-center max-w-md">
@@ -151,12 +294,7 @@ const MedicineSearch = () => {
               </div>
             </motion.div>
           ) : (
-            <motion.div
-              key="chat"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="space-y-4 pt-4"
-            >
+            <motion.div key="chat" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4 pt-4">
               {messages.map((msg) => (
                 <motion.div
                   key={msg.id}
@@ -183,7 +321,7 @@ const MedicineSearch = () => {
                     {/* Side Effects */}
                     {msg.sideEffects && (
                       <div className="glass rounded-xl p-3 space-y-2">
-                        <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                        <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground tracking-wide">
                           <AlertTriangle className="w-3.5 h-3.5 text-accent" />
                           Side Effects
                         </div>
@@ -205,18 +343,18 @@ const MedicineSearch = () => {
                           Nearby Pharmacies
                         </div>
                         {msg.pharmacies.map((pharmacy) => (
-                          <div key={pharmacy.name} className="glass rounded-xl p-3 flex items-center justify-between gap-3">
+                          <div key={pharmacy.id} className="glass rounded-xl p-3 flex items-center justify-between gap-3">
                             <div className="min-w-0">
                               <div className="text-sm font-medium text-foreground truncate">{pharmacy.name}</div>
                               <div className="text-xs text-muted-foreground truncate">{pharmacy.address}</div>
                               <div className="text-xs text-muted-foreground mt-0.5">{pharmacy.distance}</div>
                             </div>
                             <div className="text-right shrink-0">
-                              <div className={`text-xs font-medium px-2 py-0.5 rounded-full ${
-                                pharmacy.available
-                                  ? "bg-emerald-100 text-emerald-700"
-                                  : "bg-red-100 text-red-600"
-                              }`}>
+                              <div
+                                className={`text-xs font-medium px-2 py-0.5 rounded-full ${
+                                  pharmacy.available ? "bg-emerald-100 text-emerald-700" : "bg-red-100 text-red-600"
+                                }`}
+                              >
                                 {pharmacy.available ? "Available" : "Unavailable"}
                               </div>
 
@@ -238,11 +376,7 @@ const MedicineSearch = () => {
               ))}
 
               {isLoading && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="flex gap-3"
-                >
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex gap-3">
                   <div className="w-7 h-7 rounded-lg bg-gradient-warm flex items-center justify-center shrink-0">
                     <Bot className="w-4 h-4 text-primary-foreground" />
                   </div>
@@ -293,7 +427,7 @@ const MedicineSearch = () => {
           </div>
         </form>
         <p className="text-[10px] text-muted-foreground text-center mt-2">
-          Powered by Avicenna AI · Not a substitute for medical advice
+          Powered by Espoir AI - Not a substitute for medical advice
         </p>
       </div>
     </div>
