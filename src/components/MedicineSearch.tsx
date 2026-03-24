@@ -49,10 +49,20 @@ const MedicineSearch = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  const addToHistory = useCallback((query: string) => {
+    setSearchHistory((prev) => {
+      const filtered = prev.filter((q) => q.toLowerCase() !== query.toLowerCase());
+      const updated = [query, ...filtered].slice(0, 30);
+      localStorage.setItem("search-history", JSON.stringify(updated));
+      return updated;
+    });
+  }, []);
+
   const handleSearch = async (query: string) => {
     if (!query.trim()) return;
 
     setShowLanding(false);
+    addToHistory(query.trim());
     const userMessage: Message = {
       id: Date.now().toString(),
       role: "user",
