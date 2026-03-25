@@ -217,10 +217,8 @@ const MedicineSearch = () => {
     }
   };
   
-  const haddedSugestions = ["Doliprane 1000mg", "Amoxicilline 500mg", "Omeprazole 20mg", "Vitamine D3"];
   const localData = localStorage.getItem('search-history');
-  const suggestions = haddedSugestions.concat(localData ? JSON.parse(localData as string) : []).slice(0, 10);
-
+  const suggestions = localData ? JSON.parse(localData as string) : []
 
   return (
     <div className="flex flex-col h-screen max-w-3xl mx-auto px-4">
