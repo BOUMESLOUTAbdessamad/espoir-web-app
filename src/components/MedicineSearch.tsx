@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Send, Pill, MapPin, AlertTriangle, Sparkles, Bot, User, Menu } from "lucide-react";
 import logo from "@/assets/logo.jpg";
 import SearchHistory from "./SearchHistory";
+import { GradientText } from "./animate-ui/primitives/texts/gradient";
 import { Medicine, Pharmacy, Message, PharmacyApiResponse } from "@/Types/MainTypes";
 
 
