@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Send, Pill, MapPin, AlertTriangle, Sparkles, Bot, User, Menu } from "lucide-react";
 import logo from "@/assets/logo.jpg";
 import SearchHistory from "./SearchHistory";
+import { GradientText } from "./animate-ui/primitives/texts/gradient";
 import { Medicine, Pharmacy, Message, PharmacyApiResponse } from "@/Types/MainTypes";
 
 
@@ -276,7 +277,9 @@ const MedicineSearch = () => {
                 </div>
               </motion.div>
               <div>
-                <h2 className="text-2xl font-bold text-foreground mb-2">Avicenna</h2>
+                <h2 className="text-2xl font-bold mb-2">
+                  <GradientText text="Avicenna" neon className="text-2xl font-bold" />
+                </h2>
                 <p className="text-muted-foreground text-sm max-w-md">
                   Search for any medicine - find availability in nearby pharmacies and learn about side effects.
                 </p>
