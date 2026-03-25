@@ -295,6 +295,39 @@ const MedicineSearch = () => {
                   </button>
                 ))}
               </div>
+
+              {/* Search input inside landing */}
+              <div className="w-full max-w-md mt-4">
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    handleSearch(input);
+                  }}
+                  className="relative"
+                >
+                  <div className="glass rounded-2xl shadow-card flex items-center">
+                    <Pill className="w-4 h-4 text-muted-foreground ml-4 shrink-0" />
+                    <input
+                      type="text"
+                      value={input}
+                      onChange={(e) => setInput(e.target.value)}
+                      placeholder="Search for a medicine..."
+                      className="flex-1 bg-transparent px-3 py-3.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
+                      disabled={isLoading}
+                    />
+                    <button
+                      type="submit"
+                      disabled={!input.trim() || isLoading}
+                      className="mr-2 w-8 h-8 rounded-xl bg-primary text-primary-foreground flex items-center justify-center disabled:opacity-30 hover:opacity-90 transition-opacity"
+                    >
+                      <Send className="w-4 h-4" />
+                    </button>
+                  </div>
+                </form>
+                <p className="text-[10px] text-muted-foreground text-center mt-2">
+                  Powered by Espoir AI - Not a substitute for medical advice
+                </p>
+              </div>
             </motion.div>
           ) : (
             <motion.div key="chat" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4 pt-4">
@@ -401,38 +434,40 @@ const MedicineSearch = () => {
         </AnimatePresence>
       </div>
 
-      {/* Input */}
-      <div className="shrink-0 pb-6 pt-2">
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            handleSearch(input);
-          }}
-          className="relative"
-        >
-          <div className="glass rounded-2xl shadow-card flex items-center">
-            <Pill className="w-4 h-4 text-muted-foreground ml-4 shrink-0" />
-            <input
-              type="text"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder="Search for a medicine..."
-              className="flex-1 bg-transparent px-3 py-3.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
-              disabled={isLoading}
-            />
-            <button
-              type="submit"
-              disabled={!input.trim() || isLoading}
-              className="mr-2 w-8 h-8 rounded-xl bg-primary text-primary-foreground flex items-center justify-center disabled:opacity-30 hover:opacity-90 transition-opacity"
-            >
-              <Send className="w-4 h-4" />
-            </button>
-          </div>
-        </form>
-        <p className="text-[10px] text-muted-foreground text-center mt-2">
-          Powered by Espoir AI - Not a substitute for medical advice
-        </p>
-      </div>
+      {/* Input - only in chat mode */}
+      {!showLanding && (
+        <div className="shrink-0 pb-6 pt-2">
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleSearch(input);
+            }}
+            className="relative"
+          >
+            <div className="glass rounded-2xl shadow-card flex items-center">
+              <Pill className="w-4 h-4 text-muted-foreground ml-4 shrink-0" />
+              <input
+                type="text"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                placeholder="Search for a medicine..."
+                className="flex-1 bg-transparent px-3 py-3.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
+                disabled={isLoading}
+              />
+              <button
+                type="submit"
+                disabled={!input.trim() || isLoading}
+                className="mr-2 w-8 h-8 rounded-xl bg-primary text-primary-foreground flex items-center justify-center disabled:opacity-30 hover:opacity-90 transition-opacity"
+              >
+                <Send className="w-4 h-4" />
+              </button>
+            </div>
+          </form>
+          <p className="text-[10px] text-muted-foreground text-center mt-2">
+            Powered by Espoir AI - Not a substitute for medical advice
+          </p>
+        </div>
+      )}
     </div>
   );
 };
