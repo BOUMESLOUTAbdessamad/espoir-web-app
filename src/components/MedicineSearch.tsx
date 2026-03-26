@@ -613,8 +613,20 @@ const MedicineSearch = () => {
               </button>
             </div>
           </form>
-          <p className="text-[10px] text-muted-foreground text-center mt-2">
-            Powered by Espoir AI - Not a substitute for medical advice
+          <div className="flex items-center justify-center gap-2 mt-2">
+            {USE_AI ? (
+              <div className="flex items-center gap-1.5 text-[10px] text-primary">
+                <Zap className="w-3 h-3" />
+                <span>AI-powered search active</span>
+              </div>
+            ) : (
+              <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
+                <span>Add VITE_OPENROUTER_API_KEY in .env for AI features</span>
+              </div>
+            )}
+          </div>
+          <p className="text-[10px] text-muted-foreground text-center">
+            {USE_AI ? "AI-generated responses - Consult healthcare professionals for medical advice" : "Not a substitute for medical advice"}
           </p>
         </div>
       )}
