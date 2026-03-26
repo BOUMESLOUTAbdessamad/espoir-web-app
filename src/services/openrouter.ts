@@ -18,23 +18,23 @@ const FREE_MODELS = [
   "nvidia/nemotron-3-super-120b-a12b:free"
 ];
 
-export const MEDICAL_SYSTEM_PROMPT = `Tu es Espoir AI, un assistant medical/pharmacie.
+export const MEDICAL_SYSTEM_PROMPT = `You are Espoir AI, a medical/pharmacy assistant.
 
-IMPORTANT - Format de reponse obligatoire avec sections en gras:
+IMPORTANT - Response format with bold sections:
 
 **Description:**
-[Description breve du medicament]
+[Brief description of the medicine]
 
 **Indications:**
-[Ce pour quoi le medicament est utilise]
+[What conditions the medicine treats]
 
-**Effets Secondaires:**
-[Effets secondaires si existants]
+**Side Effects:**
+[Common side effects if any]
 
 **Precautions:**
-[Avertissements]
+[Important warnings]
 
-Reponds en FRANCAIS de maniere concise.`;
+Keep responses concise in English.`;
 
 export async function chatWithAI(
   messages: ChatMessage[],
@@ -43,7 +43,7 @@ export async function chatWithAI(
   const apiKey = options.apiKey || import.meta.env.VITE_OPENROUTER_API_KEY;
   
   if (!apiKey) {
-    throw new Error("Cle API OpenRouter non configuree. Ajoutez VITE_OPENROUTER_API_KEY dans .env");
+    throw new Error("OpenRouter API key not configured. Add VITE_OPENROUTER_API_KEY to .env");
   }
 
   const configuredModel = import.meta.env.VITE_OPENROUTER_MODEL;
@@ -93,7 +93,7 @@ export async function chatWithAI(
     }
   }
 
-  throw new Error(`Erreur OpenRouter: ${lastError || "Modeles gratuits non disponibles. Reessayez plus tard."}`);
+  throw new Error(`OpenRouter Error: ${lastError || "Free models unavailable. Try again later."}`);
 }
 
 export function buildMedicalPrompt(userQuery: string, medicineInfo?: {

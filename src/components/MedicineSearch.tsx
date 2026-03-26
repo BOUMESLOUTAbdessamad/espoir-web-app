@@ -238,25 +238,25 @@ const MedicineSearch = () => {
       }
 
       const messages: ChatMessage[] = [
-        { role: "system", content: `You are Espoir AI, a helpful medical/pharmacy assistant. Keep responses concise and in French. Always remind users to consult healthcare professionals for medical advice.` }
+        { role: "system", content: `You are Espoir AI, a helpful medical/pharmacy assistant. Keep responses concise and in English. Always remind users to consult healthcare professionals for medical advice.` }
       ];
 
       if (pharmacyData) {
         let context = `The user searched for "${pharmacyData.medicineName}"`;
         if (pharmacyData.medicineDCI) context += ` (DCI: ${pharmacyData.medicineDCI})`;
-        if (pharmacyData.medicineMark) context += ` (Marque: ${pharmacyData.medicineMark})`;
+        if (pharmacyData.medicineMark) context += ` (Brand: ${pharmacyData.medicineMark})`;
         
         if (pharmacyData.pharmacies && pharmacyData.pharmacies.length > 0) {
           context += "\n\n Pharmacies with this medicine:";
           pharmacyData.pharmacies.forEach((p, i) => {
-            context += `\n${i + 1}. ${p.name} - ${p.address} (${p.available ? "Disponible" : "Non disponible"})`;
+            context += `\n${i + 1}. ${p.name} - ${p.address} (${p.available ? "Available" : "Unavailable"})`;
           });
         } else {
-          context += "\n\nAucune pharmacie n'a ce medicament disponible.";
+          context += "\n\nNo pharmacies have this medicine available.";
         }
         
         messages.push({ role: "user", content: context });
-        messages.push({ role: "assistant", content: `J'ai trouve des informations pour "${pharmacyData.medicineName}". Voici les details:` });
+        messages.push({ role: "assistant", content: `I found information for "${pharmacyData.medicineName}". Here are the details:` });
       }
 
       messages.push({ role: "user", content: query });
@@ -278,7 +278,7 @@ const MedicineSearch = () => {
         {
           id: (Date.now() + 1).toString(),
           role: "assistant",
-          content: `Erreur: ${error instanceof Error ? error.message : "Impossible de contacter l'IA. Verifiez votre cle API."}`,
+          content: `Error: ${error instanceof Error ? error.message : "Could not connect to AI. Check your API key."}`,
         },
       ]);
     } finally {
@@ -488,13 +488,13 @@ const MedicineSearch = () => {
                     {msg.role === "assistant" ? (
                       <div className="bg-muted rounded-2xl rounded-bl-md overflow-hidden">
                         <div className="px-4 py-3 bg-gradient-to-r from-primary/10 to-primary/5 border-b border-primary/10">
-                          <h3 className="font-bold text-foreground text-sm">Informations Medicales</h3>
+                          <h3 className="font-bold text-foreground text-sm">Medical Information</h3>
                         </div>
                         <div className="p-4 space-y-3">
                           <StyledResponse content={msg.content} />
                           <div className="pt-2 mt-3 border-t border-primary/10">
                             <p className="text-[10px] text-muted-foreground italic">
-                              * Consultez toujours un professionnel de sante
+                              * Always consult a healthcare professional
                             </p>
                           </div>
                         </div>
@@ -608,7 +608,7 @@ const MedicineSearch = () => {
                   }`}
                 >
                   <Zap className="w-3.5 h-3.5" />
-                  <span>IA</span>
+                  <span>AI</span>
                 </button>
               )}
               <Pill className="w-4 h-4 text-muted-foreground ml-2 shrink-0" />
@@ -633,10 +633,10 @@ const MedicineSearch = () => {
           <p className="text-[10px] text-muted-foreground text-center mt-2">
             {HAS_AI_KEY ? (
               aiEnabled 
-                ? "IA Medicale active - Reponses IA" 
-                : "Recherche en base de donnees"
+                ? "AI Search Active" 
+                : "Database Search"
             ) : (
-              "Recherche en base de donnees"
+              "Database Search"
             )}
           </p>
         </div>
