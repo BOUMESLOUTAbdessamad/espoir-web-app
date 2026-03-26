@@ -10,7 +10,7 @@ import { getAIResponse, chatWithAI, ChatMessage } from "@/services/openrouter";
 
 const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL ?? "http://localhost:5000/api/v1").replace(/\/$/, "");
 const OPENROUTER_API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY;
-const USE_AI = Boolean(OPENROUTER_API_KEY);
+const HAS_AI_KEY = Boolean(OPENROUTER_API_KEY);
 
 const MOCK_RESPONSES: Record<string, { text: string; sideEffects: string[] }> = {
   default: {
@@ -174,6 +174,7 @@ const MedicineSearch = () => {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showLanding, setShowLanding] = useState(true);
+  const [aiEnabled, setAiEnabled] = useState(false);
   const [searchHistory, setSearchHistory] = useState<string[]>(() => {
     const saved = localStorage.getItem("search-history");
     return saved ? JSON.parse(saved) : [];
@@ -210,7 +211,7 @@ const MedicineSearch = () => {
     setInput("");
     setIsLoading(true);
 
-    if (USE_AI) {
+    if (aiEnabled && HAS_AI_KEY) {
       await handleAISearch(query);
     } else {
       await handleMockSearch(query);
@@ -595,7 +596,22 @@ const MedicineSearch = () => {
             className="relative"
           >
             <div className="glass rounded-2xl shadow-card flex items-center">
-              <Pill className="w-4 h-4 text-muted-foreground ml-4 shrink-0" />
+              {HAS_AI_KEY && (
+                <button
+                  type="button"
+                  onClick={() => setAiEnabled(!aiEnabled)}
+                  disabled={isLoading}
+                  className={`ml-3 mr-1 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1.5 ${
+                    aiEnabled
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-muted text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  <Zap className="w-3.5 h-3.5" />
+                  <span>IA</span>
+                </button>
+              )}
+              <Pill className="w-4 h-4 text-muted-foreground ml-2 shrink-0" />
               <input
                 type="text"
                 value={input}
@@ -613,20 +629,15 @@ const MedicineSearch = () => {
               </button>
             </div>
           </form>
-          <div className="flex items-center justify-center gap-2 mt-2">
-            {USE_AI ? (
-              <div className="flex items-center gap-1.5 text-[10px] text-primary">
-                <Zap className="w-3 h-3" />
-                <span>AI-powered search active</span>
-              </div>
+          
+          <p className="text-[10px] text-muted-foreground text-center mt-2">
+            {HAS_AI_KEY ? (
+              aiEnabled 
+                ? "IA Medicale active - Reponses IA" 
+                : "Recherche en base de donnees"
             ) : (
-              <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
-                <span>Add VITE_OPENROUTER_API_KEY in .env for AI features</span>
-              </div>
+              "Recherche en base de donnees"
             )}
-          </div>
-          <p className="text-[10px] text-muted-foreground text-center">
-            {USE_AI ? "AI-generated responses - Consult healthcare professionals for medical advice" : "Not a substitute for medical advice"}
           </p>
         </div>
       )}
