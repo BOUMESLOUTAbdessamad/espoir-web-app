@@ -1,13 +1,16 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Send, Pill, MapPin, AlertTriangle, Sparkles, Bot, User, Menu } from "lucide-react";
+import { Send, Pill, MapPin, AlertTriangle, Sparkles, Bot, User, Menu, Zap } from "lucide-react";
 import logo from "@/assets/logo.jpg";
 import SearchHistory from "./SearchHistory";
 import { GradientText } from "./animate-ui/primitives/texts/gradient";
 import { Medicine, Pharmacy, Message, PharmacyApiResponse } from "@/Types/MainTypes";
+import { getAIResponse, chatWithAI, ChatMessage } from "@/services/openrouter";
 
 
 const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL ?? "http://localhost:5000/api/v1").replace(/\/$/, "");
+const OPENROUTER_API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY;
+const USE_AI = Boolean(OPENROUTER_API_KEY);
 
 const MOCK_RESPONSES: Record<string, { text: string; sideEffects: string[] }> = {
   default: {
@@ -102,6 +105,70 @@ const tryResolveMedicineId = async (query: string): Promise<number | null> => {
   return null;
 };
 
+const MarkdownContent = ({ content }: { content: string }) => {
+  const parts = content.split(/(\*\*[^*]+\*\*)/g);
+  
+  return (
+    <div className="text-sm text-foreground leading-relaxed space-y-2">
+      {parts.map((part, idx) => {
+        if (part.startsWith("**") && part.endsWith("**")) {
+          const title = part.replace(/\*\*/g, "");
+          return (
+            <div key={idx} className="mt-3 first:mt-0">
+              <h4 className="text-xs font-bold text-primary uppercase tracking-wide flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
+                {title}
+              </h4>
+            </div>
+          );
+        }
+        if (part.trim()) {
+          return <p key={idx} className="pl-3.5">{part}</p>;
+        }
+        return null;
+      })}
+    </div>
+  );
+};
+
+const StyledResponse = ({ content }: { content: string }) => {
+  const lines = content.split("\n").filter((l) => l.trim());
+  const sections: { title: string; content: string[] }[] = [];
+  
+  let currentSection: { title: string; content: string[] } | null = null;
+  
+  for (const line of lines) {
+    const boldMatch = line.match(/^\*\*(.+?)\*\*[:\s]*(.*)$/);
+    if (boldMatch) {
+      if (currentSection) sections.push(currentSection);
+      currentSection = { title: boldMatch[1], content: boldMatch[2] ? [boldMatch[2]] : [] };
+    } else if (currentSection) {
+      currentSection.content.push(line.trim());
+    }
+  }
+  if (currentSection) sections.push(currentSection);
+
+  if (sections.length === 0) {
+    return <MarkdownContent content={content} />;
+  }
+
+  return (
+    <div className="space-y-3">
+      {sections.map((section, idx) => (
+        <div key={idx} className="space-y-1">
+          <h4 className="text-xs font-bold text-primary uppercase tracking-wide flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
+            {section.title}
+          </h4>
+          <p className="text-sm text-foreground/90 leading-relaxed pl-3.5">
+            {section.content.join(" ")}
+          </p>
+        </div>
+      ))}
+    </div>
+  );
+};
+
 const MedicineSearch = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
@@ -143,7 +210,82 @@ const MedicineSearch = () => {
     setInput("");
     setIsLoading(true);
 
-    // Simulate AI response
+    if (USE_AI) {
+      await handleAISearch(query);
+    } else {
+      await handleMockSearch(query);
+    }
+  };
+
+  const handleAISearch = async (query: string) => {
+    try {
+      const medicineId = await tryResolveMedicineId(query);
+      
+      let pharmacyData: { pharmacies?: Pharmacy[]; medicineName: string; medicineDCI?: string; medicineMark?: string } | null = null;
+      
+      if (medicineId) {
+        const res = await fetch(`${API_BASE_URL}/medicines/${medicineId}/pharmacies?limit=5`);
+        if (res.ok) {
+          const payload = (await res.json()) as PharmacyApiResponse;
+          pharmacyData = {
+            pharmacies: payload.pharmacies.map(normalizePharmacy),
+            medicineName: payload.medicine_dci || payload.medicine_mark || query,
+            medicineDCI: payload.medicine_dci,
+            medicineMark: payload.medicine_mark,
+          };
+        }
+      }
+
+      const messages: ChatMessage[] = [
+        { role: "system", content: `You are Espoir AI, a helpful medical/pharmacy assistant. Keep responses concise and in French. Always remind users to consult healthcare professionals for medical advice.` }
+      ];
+
+      if (pharmacyData) {
+        let context = `The user searched for "${pharmacyData.medicineName}"`;
+        if (pharmacyData.medicineDCI) context += ` (DCI: ${pharmacyData.medicineDCI})`;
+        if (pharmacyData.medicineMark) context += ` (Marque: ${pharmacyData.medicineMark})`;
+        
+        if (pharmacyData.pharmacies && pharmacyData.pharmacies.length > 0) {
+          context += "\n\n Pharmacies with this medicine:";
+          pharmacyData.pharmacies.forEach((p, i) => {
+            context += `\n${i + 1}. ${p.name} - ${p.address} (${p.available ? "Disponible" : "Non disponible"})`;
+          });
+        } else {
+          context += "\n\nAucune pharmacie n'a ce medicament disponible.";
+        }
+        
+        messages.push({ role: "user", content: context });
+        messages.push({ role: "assistant", content: `J'ai trouve des informations pour "${pharmacyData.medicineName}". Voici les details:` });
+      }
+
+      messages.push({ role: "user", content: query });
+
+      const aiResponse = await chatWithAI(messages);
+      
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: (Date.now() + 1).toString(),
+          role: "assistant",
+          content: aiResponse,
+          pharmacies: pharmacyData?.pharmacies,
+        },
+      ]);
+    } catch (error) {
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: (Date.now() + 1).toString(),
+          role: "assistant",
+          content: `Erreur: ${error instanceof Error ? error.message : "Impossible de contacter l'IA. Verifiez votre cle API."}`,
+        },
+      ]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleMockSearch = async (query: string) => {
     await new Promise((r) => setTimeout(r, 1500));
     try {
       const medicineId = await tryResolveMedicineId(query);
@@ -342,15 +484,25 @@ const MedicineSearch = () => {
                     </div>
                   )}
                   <div className={`max-w-[85%] space-y-3 ${msg.role === "user" ? "order-first" : ""}`}>
-                    <div
-                      className={`rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${
-                        msg.role === "user"
-                          ? "bg-primary text-primary-foreground rounded-br-md"
-                          : "bg-muted text-foreground rounded-bl-md"
-                      }`}
-                    >
-                      {msg.content}
-                    </div>
+                    {msg.role === "assistant" ? (
+                      <div className="bg-muted rounded-2xl rounded-bl-md overflow-hidden">
+                        <div className="px-4 py-3 bg-gradient-to-r from-primary/10 to-primary/5 border-b border-primary/10">
+                          <h3 className="font-bold text-foreground text-sm">Informations Medicales</h3>
+                        </div>
+                        <div className="p-4 space-y-3">
+                          <StyledResponse content={msg.content} />
+                          <div className="pt-2 mt-3 border-t border-primary/10">
+                            <p className="text-[10px] text-muted-foreground italic">
+                              * Consultez toujours un professionnel de sante
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="bg-primary text-primary-foreground rounded-2xl rounded-br-md px-4 py-2.5 text-sm leading-relaxed">
+                        {msg.content}
+                      </div>
+                    )}
 
                     {/* Side Effects */}
                     {msg.sideEffects && (

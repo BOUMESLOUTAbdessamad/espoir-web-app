@@ -2,8 +2,16 @@ export interface Message {
   id: string;
   role: "user" | "assistant";
   content: string;
+  title?: string;
+  summary?: string;
+  sections?: MessageSection[];
   pharmacies?: Pharmacy[];
   sideEffects?: string[];
+}
+
+export interface MessageSection {
+  title: string;
+  content: string;
 }
 
 export interface Pharmacy {
