@@ -112,18 +112,10 @@ const MarkdownContent = ({ content }: { content: string }) => {
     <div className="text-sm text-foreground leading-relaxed space-y-2">
       {parts.map((part, idx) => {
         if (part.startsWith("**") && part.endsWith("**")) {
-          const title = part.replace(/\*\*/g, "");
-          return (
-            <div key={idx} className="mt-3 first:mt-0">
-              <h4 className="text-xs font-bold text-primary uppercase tracking-wide flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
-                {title}
-              </h4>
-            </div>
-          );
+          return <strong key={idx} className="font-bold">{part.replace(/\*\*/g, "")}</strong>;
         }
         if (part.trim()) {
-          return <p key={idx} className="pl-3.5">{part}</p>;
+          return <span key={idx}>{part}</span>;
         }
         return null;
       })}
@@ -133,39 +125,33 @@ const MarkdownContent = ({ content }: { content: string }) => {
 
 const StyledResponse = ({ content }: { content: string }) => {
   const lines = content.split("\n").filter((l) => l.trim());
-  const sections: { title: string; content: string[] }[] = [];
-  
-  let currentSection: { title: string; content: string[] } | null = null;
+  const parts: { text: string; isBold: boolean }[] = [];
   
   for (const line of lines) {
-    const boldMatch = line.match(/^\*\*(.+?)\*\*[:\s]*(.*)$/);
-    if (boldMatch) {
-      if (currentSection) sections.push(currentSection);
-      currentSection = { title: boldMatch[1], content: boldMatch[2] ? [boldMatch[2]] : [] };
-    } else if (currentSection) {
-      currentSection.content.push(line.trim());
+    const segments = line.split(/(\*\*[^*]+\*\*)/g);
+    for (const segment of segments) {
+      if (segment.startsWith("**") && segment.endsWith("**")) {
+        parts.push({ text: segment.replace(/\*\*/g, ""), isBold: true });
+      } else if (segment.trim()) {
+        parts.push({ text: segment, isBold: false });
+      }
     }
   }
-  if (currentSection) sections.push(currentSection);
 
-  if (sections.length === 0) {
-    return <MarkdownContent content={content} />;
+  if (parts.length === 0) {
+    return <p className="text-sm text-foreground leading-relaxed">{content}</p>;
   }
 
   return (
-    <div className="space-y-3">
-      {sections.map((section, idx) => (
-        <div key={idx} className="space-y-1">
-          <h4 className="text-xs font-bold text-primary uppercase tracking-wide flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
-            {section.title}
-          </h4>
-          <p className="text-sm text-foreground/90 leading-relaxed pl-3.5">
-            {section.content.join(" ")}
-          </p>
-        </div>
+    <p className="text-sm text-foreground leading-relaxed">
+      {parts.map((part, idx) => (
+        part.isBold ? (
+          <strong key={idx} className="font-bold">{part.text}</strong>
+        ) : (
+          <span key={idx}>{part.text} </span>
+        )
       ))}
-    </div>
+    </p>
   );
 };
 
