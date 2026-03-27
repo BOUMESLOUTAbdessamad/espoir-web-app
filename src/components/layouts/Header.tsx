@@ -1,5 +1,5 @@
 import {  Menu } from "lucide-react";
-import logo from "../assets/logo.png";
+import logo from "@/assets/logo.jpg";
 
 const Header  =  ({onSideBarOen}: {onSideBarOen: () => void}) => {
     return (
