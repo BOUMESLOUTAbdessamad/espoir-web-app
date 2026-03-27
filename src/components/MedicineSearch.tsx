@@ -425,7 +425,7 @@ const MedicineSearch = () => {
                   }}
                   className="relative"
                 >
-                  <div className="glass rounded-2xl shadow-card flex items-center">
+                  <div className={`border rounded-3xl shadow-card flex items-center ${aiEnabled ? "ai-border-glow" : "glass"}`}>
                       {HAS_AI_KEY && (
                       <button
                         type="button"
@@ -596,7 +596,7 @@ const MedicineSearch = () => {
             }}
             className="relative"
           >
-            <div className="glass rounded-2xl shadow-card flex items-center">
+            <div className={`rounded-3xl shadow-card flex items-center ${aiEnabled ? "ai-border-glow" : "glass"}`}>
               {HAS_AI_KEY && (
                 <button
                   type="button"
@@ -618,7 +618,7 @@ const MedicineSearch = () => {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder="Search for a medicine..."
-                className="flex-1 bg-transparent px-3 py-3.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
+                className={`flex-1 bg-transparent px-3 py-3.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none ${aiEnabled ? "ai-border-glow rounded-xl" : ""}`}
                 disabled={isLoading}
               />
               <button
