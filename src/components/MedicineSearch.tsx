@@ -6,7 +6,7 @@ import SearchHistory from "./SearchHistory";
 import { GradientText } from "./animate-ui/primitives/texts/gradient";
 import { Medicine, Pharmacy, Message, PharmacyApiResponse } from "@/Types/MainTypes";
 import { getAIResponse, chatWithAI, ChatMessage } from "@/services/openrouter";
-
+import Header from "./layouts/Header";
 
 const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL ?? "http://localhost:5000/api/v1").replace(/\/$/, "");
 const OPENROUTER_API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY;
@@ -351,6 +351,7 @@ const MedicineSearch = () => {
 
   return (
     <div className="flex flex-col h-screen max-w-3xl mx-auto px-4">
+      {/* Side bar */}
       <SearchHistory
         history={searchHistory}
         onSelect={handleSearch}
@@ -368,21 +369,7 @@ const MedicineSearch = () => {
         isOpen={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
       />
-
-      {/* Header */}
-      <header className="flex items-center gap-3 py-4 shrink-0">
-        <button
-          onClick={() => setSidebarOpen(true)}
-          className="w-8 h-8 rounded-lg hover:bg-muted flex items-center justify-center transition-colors"
-        >
-          <Menu className="w-4 h-4 text-muted-foreground" />
-        </button>
-        <img src={logo} alt="Espoir DZ" className="w-9 h-9 rounded-xl" />
-        <h1 className="text-lg font-bold text-foreground">
-          Espoir <span className="text-gradient">AI</span>
-        </h1>
-      </header>
-
+      <Header onSideBarOen={() => setSidebarOpen(true)}  />
       {/* Messages / Landing */}
       <div className="flex-1 overflow-y-auto pb-4">
         <AnimatePresence mode="wait">
