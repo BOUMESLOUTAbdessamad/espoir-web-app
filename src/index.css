@@ -135,7 +135,7 @@
     inset: 0;
     border-radius: inherit;
     padding: 2px;
-    background: conic-gradient(from var(--angle), hsl(354 100% 63%), hsl(61, 100%, 44%), hsl(217 91% 20%), hsl(354 100% 70%));
+    background: conic-gradient(from var(--angle), hsl(354 100% 63%), hsl(61, 100%, 44%), hsl(217, 100%, 62%), hsl(354 100% 70%));
     animation: rotate-border 3s linear infinite;
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
