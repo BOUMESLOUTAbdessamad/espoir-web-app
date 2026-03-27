@@ -426,6 +426,21 @@ const MedicineSearch = () => {
                   className="relative"
                 >
                   <div className="glass rounded-2xl shadow-card flex items-center">
+                      {HAS_AI_KEY && (
+                      <button
+                        type="button"
+                        onClick={() => setAiEnabled(!aiEnabled)}
+                        disabled={isLoading}
+                        className={`ml-3 mr-1 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1.5 ${
+                          aiEnabled
+                            ? "bg-primary text-primary-foreground"
+                            : "bg-muted text-muted-foreground hover:text-foreground"
+                        }`}
+                      >
+                        <Zap className="w-3.5 h-3.5" />
+                        <span>AI</span>
+                      </button>
+                    )}
                     <Pill className="w-4 h-4 text-muted-foreground ml-4 shrink-0" />
                     <input
                       type="text"
