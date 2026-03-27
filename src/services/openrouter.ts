@@ -18,8 +18,8 @@ const FREE_MODELS = [
   "nvidia/nemotron-3-super-120b-a12b:free"
 ];
 
-export const MEDICAL_SYSTEM_PROMPT = `You are Espoir AI, a medical/pharmacy assistant.
-
+export const MEDICAL_SYSTEM_PROMPT = `You are Avicenna, a medical/pharmacy assistant.
+When you get a hello message, respond with a friendly greeting, your name "Avicenna" and ask how you can assist. For medical queries, provide concise information based on the following format:
 IMPORTANT - Response format with bold sections:
 
 **Description:**
@@ -59,7 +59,7 @@ export async function chatWithAI(
           "Content-Type": "application/json",
           Authorization: `Bearer ${apiKey}`,
           "HTTP-Referer": window.location.origin || "https://pharmacy-buddy.app",
-          "X-Title": "Espoir AI - Pharmacy Buddy",
+          "X-Title": "Avicenna - Pharmacy Buddy",
         },
         body: JSON.stringify({
           model,
