@@ -167,6 +167,7 @@ const MedicineSearch = () => {
   });
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [slowSearch, setSlowSearch] = useState(false);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -205,6 +206,9 @@ const MedicineSearch = () => {
   };
 
   const handleAISearch = async (query: string) => {
+    setSlowSearch(false)
+    const timer = setTimeout(() => setSlowSearch(true), 5000)
+
     try {
       const medicineId = await tryResolveMedicineId(query);
       
@@ -268,6 +272,8 @@ const MedicineSearch = () => {
         },
       ]);
     } finally {
+      clearTimeout(timer)
+      setSlowSearch(false)
       setIsLoading(false);
     }
   };
@@ -540,7 +546,8 @@ const MedicineSearch = () => {
                   <div className="w-7 h-7 rounded-lg bg-gradient-warm flex items-center justify-center shrink-0">
                     <Bot className="w-4 h-4 text-primary-foreground" />
                   </div>
-                  <div className="bg-muted rounded-2xl rounded-bl-md px-4 py-3 flex gap-1">
+                  <div className="bg-muted rounded-2xl rounded-bl-md px-4 py-3 flex gap-1 items-center">
+
                     {[0, 1, 2].map((i) => (
                       <motion.div
                         key={i}
@@ -549,6 +556,12 @@ const MedicineSearch = () => {
                         transition={{ duration: 1, delay: i * 0.2, repeat: Infinity }}
                       />
                     ))}
+                    {slowSearch && (
+                      <span className="ml-2 text-muted-foreground text-xs">
+                        Search is taking longer than usual, please wait...
+                      </span>
+                    )}
+
                   </div>
                 </motion.div>
               )}
