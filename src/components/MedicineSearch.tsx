@@ -228,7 +228,7 @@ const MedicineSearch = () => {
       }
 
       const messages: ChatMessage[] = [
-        { role: "system", content: `You are Espoir AI, a helpful medical/pharmacy assistant. Keep responses concise and in English. Always remind users to consult healthcare professionals for medical advice.` }
+        { role: "system", content: `You are Avicenna, a helpful medical/pharmacy assistant. Keep responses concise and in English. Always remind users to consult healthcare professionals for medical advice.` }
       ];
 
       if (pharmacyData) {
@@ -634,7 +634,7 @@ const MedicineSearch = () => {
           <p className="text-[10px] text-muted-foreground text-center mt-2">
             {HAS_AI_KEY ? (
               aiEnabled 
-                ? "AI Search Active" 
+                ? "AI Search Active - Not s sustitute for medical advice." 
                 : "Database Search"
             ) : (
               "Database Search"
