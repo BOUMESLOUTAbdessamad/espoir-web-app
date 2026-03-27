@@ -201,7 +201,7 @@ const MedicineSearch = () => {
     if (aiEnabled && HAS_AI_KEY) {
       await handleAISearch(query);
     } else {
-      await handleMockSearch(query);
+      await handleDbSearch(query);
     }
   };
 
