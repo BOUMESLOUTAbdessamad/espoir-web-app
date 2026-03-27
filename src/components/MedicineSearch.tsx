@@ -634,7 +634,7 @@ const MedicineSearch = () => {
           <p className="text-[10px] text-muted-foreground text-center mt-2">
             {HAS_AI_KEY ? (
               aiEnabled 
-                ? "AI Search Active - Not s sustitute for medical advice." 
+                ? "AI Search Active - Not a sustitute for medical advice." 
                 : "Database Search"
             ) : (
               "Database Search"
