@@ -170,6 +170,7 @@ const MedicineSearch = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [slowSearch, setSlowSearch] = useState(false);
+  const [currentModel, setCurrentModel] = useState<string | null>(null);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -253,7 +254,8 @@ const MedicineSearch = () => {
 
       messages.push({ role: "user", content: query });
 
-      const aiResponse = await chatWithAI(messages);
+      const { content: aiResponse, model } = await chatWithAI(messages);
+      setCurrentModel(model);
       
       setMessages((prev) => [
         ...prev,
@@ -639,11 +641,18 @@ const MedicineSearch = () => {
               </button>
             </div>
           </form>
-          
+                    {aiEnabled && currentModel && (
+            <div className="flex items-center justify-center gap-2 mt-1">
+              <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              <p className="text-[10px] text-muted-foreground">
+                Using {currentModel}
+              </p>
+            </div>
+          )}
           <p className="text-[10px] text-muted-foreground text-center mt-2">
             {HAS_AI_KEY ? (
               aiEnabled 
-                ? "AI Search Active - Not a sustitute for medical advice." 
+                ? "AI Search Active - Not a substitute for medical advice" 
                 : "Database Search"
             ) : (
               "Database Search"
