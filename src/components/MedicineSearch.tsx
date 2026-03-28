@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Send, Pill, MapPin, AlertTriangle, Sparkles, Bot, User, Menu, Zap } from "lucide-react";
+import { Send, Pill, MapPin, AlertTriangle, Sparkles, Bot, User, Menu, Zap, Navigation } from "lucide-react";
 import logo from "@/assets/logo.jpg";
 import SearchHistory from "./SearchHistory";
 import { GradientText } from "./animate-ui/primitives/texts/gradient";
@@ -51,6 +51,8 @@ const normalizePharmacy = (pharmacy: PharmacyApiResponse["pharmacies"][number]):
     distance: cityWilaya || "Location not provided",
     available: !["inactive", "closed", "unavailable", "false", "0"].includes(availability),
     price: "N/A",
+    lat: pharmacy.lat,
+    lng: pharmacy.lng,
   };
 };
 
@@ -525,23 +527,30 @@ const MedicineSearch = () => {
                         </div>
                         {msg.pharmacies.map((pharmacy) => (
                           <div key={pharmacy.id} className="glass rounded-xl p-3 flex items-center justify-between gap-3">
-                            <div className="min-w-0">
+                            <div className="min-w-0 flex-1">
                               <div className="text-sm font-medium text-foreground truncate">{pharmacy.name}</div>
                               <div className="text-xs text-muted-foreground truncate">{pharmacy.address}</div>
                               <div className="text-xs text-muted-foreground mt-0.5">{pharmacy.distance}</div>
                             </div>
-                            <div className="text-right shrink-0">
+                            <div className="flex items-center gap-2 shrink-0">
+                              {pharmacy.lat && pharmacy.lng && (
+                                <a
+                                  href={`https://www.google.com/maps/dir/?api=1&destination=${pharmacy.lat},${pharmacy.lng}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
+                                  title="Get directions"
+                                >
+                                  <Navigation className="w-4 h-4" />
+                                </a>
+                              )}
                               <div
-                                className={`text-xs font-medium px-2 py-0.5 rounded-full ${
+                                className={`text-xs font-medium p-2 rounded-lg ${
                                   pharmacy.available ? "bg-emerald-100 text-emerald-700" : "bg-red-100 text-red-600"
                                 }`}
                               >
                                 {pharmacy.available ? "Available" : "Unavailable"}
                               </div>
-
-                              {/* {pharmacy.available && (
-                                <div className="text-xs font-semibold text-foreground mt-1">{pharmacy.price}</div>
-                              )} */}
                             </div>
                           </div>
                         ))}
