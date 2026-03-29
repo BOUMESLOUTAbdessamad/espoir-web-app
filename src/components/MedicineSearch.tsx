@@ -282,7 +282,7 @@ const MedicineSearch = () => {
     }
   };
 
-  const handleMockSearch = async (query: string) => {
+  const handleDbSearch = async (query: string) => {
     await new Promise((r) => setTimeout(r, 1500));
     try {
       const medicineId = await tryResolveMedicineId(query);
