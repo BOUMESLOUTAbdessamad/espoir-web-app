@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Send, Pill, MapPin, AlertTriangle, Sparkles, Bot, User, Menu, Zap, Navigation } from "lucide-react";
-import logo from "@/assets/logo.jpg";
+import { ArrowUp , MapPin, AlertTriangle, Sparkles, Bot, User, Zap, Navigation } from "lucide-react";
 import SearchHistory from "./SearchHistory";
 import { GradientText } from "./animate-ui/primitives/texts/gradient";
 import { Medicine, Pharmacy, Message, PharmacyApiResponse } from "@/Types/MainTypes";
@@ -459,7 +458,7 @@ const MedicineSearch = () => {
                       disabled={!input.trim() || isLoading}
                       className="mr-2 w-8 h-8 rounded-xl bg-primary text-primary-foreground flex items-center justify-center disabled:opacity-30 hover:opacity-90 transition-opacity"
                     >
-                      <Send className="w-4 h-4" />
+                      <ArrowUp className="w-4 h-4" />
                     </button>
                   </div>
                 </form>
@@ -637,7 +636,7 @@ const MedicineSearch = () => {
                 disabled={!input.trim() || isLoading}
                 className="mr-2 w-8 h-8 rounded-xl bg-primary text-primary-foreground flex items-center justify-center disabled:opacity-30 hover:opacity-90 transition-opacity"
               >
-                <Send className="w-4 h-4" />
+                <ArrowUp className="w-4 h-4" />
               </button>
             </div>
           </form>
