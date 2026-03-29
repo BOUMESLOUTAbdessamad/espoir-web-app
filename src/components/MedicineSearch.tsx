@@ -442,10 +442,10 @@ const MedicineSearch = () => {
                         }`}
                       >
                         <Zap className="w-3.5 h-3.5" />
-                        <span>AI</span>
+                        <span>Avicenna</span>
                       </button>
                     )}
-                    <Pill className="w-4 h-4 text-muted-foreground ml-4 shrink-0" />
+                    {/* <Pill className="w-4 h-4 text-muted-foreground ml-4 shrink-0" /> */}
                     <input
                       type="text"
                       value={input}
@@ -620,10 +620,10 @@ const MedicineSearch = () => {
                   }`}
                 >
                   <Zap className="w-3.5 h-3.5" />
-                  <span>AI</span>
+                  <span>Avicenna</span>
                 </button>
               )}
-              <Pill className="w-4 h-4 text-muted-foreground ml-2 shrink-0" />
+              {/* <Pill className="w-4 h-4 text-muted-foreground ml-2 shrink-0" /> */}
               <input
                 type="text"
                 value={input}
