@@ -21,6 +21,8 @@ export interface Pharmacy {
   distance: string;
   available: boolean;
   price: string;
+  lat?: number;
+  lng?: number;
 }
 
 export interface Medicine {
