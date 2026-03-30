@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { Search, Pill, MapPin, ShieldCheck, Sparkles } from "lucide-react";
+import { Search, Pill, MapPin, Bot, Sparkles } from "lucide-react";
 import { GradientText } from "@/components/animate-ui/primitives/texts/gradient";
 import BubbleBackground from "@/components/BubbleBackground";
 import logo from "@/assets/logo.jpg";
@@ -17,9 +17,9 @@ const features = [
     description: "Discover nearby pharmacies that have your medicine in stock.",
   },
   {
-    icon: ShieldCheck,
-    title: "Side Effects Info",
-    description: "Get informed about potential side effects before you buy.",
+    icon: Bot,
+    title: "AI Insights",
+    description: "Get in-depth AI-powered information about any medicine.",
   },
 ];
 
