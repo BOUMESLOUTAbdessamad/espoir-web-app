@@ -446,12 +446,18 @@ const MedicineSearch = () => {
                       </button>
                     )}
                     {/* <Pill className="w-4 h-4 text-muted-foreground ml-4 shrink-0" /> */}
-                    <input
-                      type="text"
+                    <textarea
                       value={input}
                       onChange={(e) => setInput(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" && !e.shiftKey) {
+                          e.preventDefault();
+                          handleSearch(input);
+                        }
+                      }}
                       placeholder="Search for a medicine..."
-                      className="flex-1 bg-transparent px-3 py-3.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
+                      rows={1}
+                      className="flex-1 bg-transparent px-3 py-3.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none resize-none min-h-[24px] max-h-32 overflow-y-auto"
                       disabled={isLoading}
                     />
                     <button
@@ -624,12 +630,18 @@ const MedicineSearch = () => {
                 </button>
               )}
               {/* <Pill className="w-4 h-4 text-muted-foreground ml-2 shrink-0" /> */}
-              <input
-                type="text"
+              <textarea
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    handleSearch(input);
+                  }
+                }}
                 placeholder="Search for a medicine..."
-                className={`flex-1 bg-transparent px-3 py-3.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none ${aiEnabled ? "ai-border-glow rounded-xl" : ""}`}
+                rows={1}
+                className={`flex-1 bg-transparent px-3 py-3.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none resize-none min-h-[24px] max-h-32 overflow-y-auto ${aiEnabled ? "ai-border-glow rounded-xl" : ""}`}
                 disabled={isLoading}
               />
               <button
