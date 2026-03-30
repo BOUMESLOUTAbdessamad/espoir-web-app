@@ -10,8 +10,8 @@ interface GradientTextProps extends React.ComponentProps<"span"> {
 
 export function GradientText({
   text,
-  gradient = "linear-gradient(90deg, hsl(var(--primary)) 0%, hsl(var(--accent)) 20%, #ec4899 50%, hsl(var(--accent)) 80%, hsl(var(--primary)) 100%)",
-  neon = false,
+  gradient = "linear-gradient(90deg, hsl(var(--primary)) 0%, hsl(var(--accent)) 15%, #3b82f6 40%, #8b5cf6 65%, hsl(var(--accent)) 85%, hsl(var(--primary)) 100%)",
+  neon = true,
   className,
   ...props
 }: GradientTextProps) {
