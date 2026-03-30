@@ -23,6 +23,7 @@ const Header = ({ setSidebarOpen, hasSideBar }: { setSidebarOpen: () => void, ha
                 <h1 className="text-lg font-bold text-foreground">
                     Espoir <span className="text-gradient">AI</span>
                 </h1>
+                <span className="text-[10px] font-medium text-blue-500 bg-blue-500/10 px-1.5  rounded-lg">Beta</span>
             </Link>
         </header>
     );
