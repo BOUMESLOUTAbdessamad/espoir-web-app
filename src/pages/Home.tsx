@@ -36,13 +36,6 @@ const Home = () => {
               Espoir <span className="text-gradient">AI</span>
             </h1>
           </div>
-          <Link
-            to="/search"
-            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-primary-foreground text-sm font-semibold hover:opacity-90 transition-opacity"
-          >
-            <Search className="w-4 h-4" />
-            Search
-          </Link>
         </header>
 
         {/* Hero */}
