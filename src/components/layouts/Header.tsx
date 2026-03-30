@@ -3,15 +3,17 @@ import { Link } from "react-router-dom";
 
 import logo from "@/assets/logo.jpg";
 
-const Header = ({ onSideBarOen }: { onSideBarOen: () => void }) => {
+const Header = ({ setSidebarOpen, hasSideBar }: { setSidebarOpen: () => void, hasSideBar: boolean}) => {
     return (
         <header className="flex items-center gap-3 py-4 shrink-0">
-            <button
-                onClick={onSideBarOen}
+            {hasSideBar && (
+                 <button
+                onClick={setSidebarOpen}
                 className="w-8 h-8 rounded-lg hover:bg-muted flex items-center justify-center transition-colors"
             >
                 <Menu className="w-4 h-4 text-muted-foreground" />
             </button>
+            )}
             <Link className="flex items-center gap-2" to="/">
                 <img
                     src={logo}

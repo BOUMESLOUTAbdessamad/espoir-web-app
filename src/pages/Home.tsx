@@ -4,7 +4,10 @@ import { Search, Pill, MapPin, Bot, Sparkles } from "lucide-react";
 import { GradientText } from "@/components/animate-ui/primitives/texts/gradient";
 import BubbleBackground from "@/components/BubbleBackground";
 import logo from "@/assets/logo.jpg";
+import Header from "@/components/layouts/Header";
+import { useState } from "react";
 
+// const features = [
 const features = [
   {
     icon: Pill,
@@ -24,20 +27,23 @@ const features = [
 ];
 
 const Home = () => {
+const [sidebarOpen, setSidebarOpen] = useState(false);
+
   return (
     <>
       <BubbleBackground />
-      <div className="min-h-screen flex flex-col">
+      <div className="min-h-screen flex flex-col max-w-3xl mx-auto px-4">
         {/* Header */}
-        <header className="flex items-center justify-between px-5 py-4">
+        {/* <header className="flex items-center justify-between px-5 py-4">
           <div className="flex items-center gap-3">
             <img src={logo} alt="Espoir DZ" className="w-9 h-9 rounded-xl" />
-            <h1 className="text-lg font-bold text-foreground">
+            <h1 className="text-lg font-bold text-foreground flex items-center gap-1.5">
               Espoir <span className="text-gradient">AI</span>
+              <span className="text-[10px] font-medium text-blue-500 bg-blue-500/10 px-1.5  rounded-lg">Beta</span>
             </h1>
           </div>
-        </header>
-
+        </header> */}
+        <Header setSidebarOpen={() => setSidebarOpen(true)} hasSideBar={false} />
         {/* Hero */}
         <main className="flex-1 flex flex-col items-center justify-center px-5 text-center gap-6">
           <motion.div

@@ -378,7 +378,8 @@ const MedicineSearch = () => {
         isOpen={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
       />
-      <Header onSideBarOen={() => setSidebarOpen(true)}  />
+      <Header setSidebarOpen={() => setSidebarOpen(true)} hasSideBar={true} />
+
       {/* Messages / Landing */}
       <div className="flex-1 overflow-y-auto pb-4">
         <AnimatePresence mode="wait">
