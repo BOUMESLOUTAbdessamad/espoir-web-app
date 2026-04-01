@@ -49,7 +49,7 @@ const [sidebarOpen, setSidebarOpen] = useState(false);
           <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            transition={{ type: "spring", stiffness: 200 }}
+            transition={{ type: "spring", stiffness: 100 }}
           >
             <div className="w-20 h-20 rounded-2xl bg-gradient-warm flex items-center justify-center shadow-glow mx-auto">
               <Sparkles className="w-10 h-10 text-primary-foreground" />

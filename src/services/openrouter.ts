@@ -41,7 +41,7 @@ On medical/pharmacy queries, respond ONLY in this exact format:
 
 STRICT RULES:
 - Never include Indications section
-- Never exceed 150 words total
+- Never exceed 200 words total
 - Never cut off mid-sentence
 - Use plain English, no medical jargon
 - If you don't know, say so briefly`;
