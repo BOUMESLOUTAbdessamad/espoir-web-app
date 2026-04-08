@@ -405,7 +405,7 @@ const MedicineSearch = () => {
                   <GradientText text="Avicenna" neon className="text-2xl font-bold" />
                 </h2>
                 <p className="text-muted-foreground text-sm max-w-md">
-                  Search for any medicine - find availability in nearby pharmacies and learn about side effects.
+                  Search for any medical information
                 </p>
               </div>
               <div className="flex flex-wrap gap-2 justify-center max-w-md">
