@@ -1,6 +1,8 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowUp , MapPin, AlertTriangle, Sparkles, Bot, User, Zap, Navigation } from "lucide-react";
+import { ArrowUp , MapPin, AlertTriangle, Sparkles, Bot, User, Navigation } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import SearchHistory from "./SearchHistory";
 import { GradientText } from "./animate-ui/primitives/texts/gradient";
 import { Medicine, Pharmacy, Message, PharmacyApiResponse } from "@/Types/MainTypes";
@@ -431,20 +433,24 @@ const MedicineSearch = () => {
                 >
                   <div className={`border rounded-3xl shadow-card flex items-center ${aiEnabled ? "ai-border-glow" : "glass"}`}>
                       {HAS_AI_KEY && (
-                      <button
-                        type="button"
-                        onClick={() => setAiEnabled(!aiEnabled)}
-                        disabled={isLoading}
-                        className={`ml-3 mr-1 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1.5 ${
-                          aiEnabled
-                            ? "bg-primary text-primary-foreground"
-                            : "bg-muted text-muted-foreground hover:text-foreground"
-                        }`}
-                      >
-                        <Zap className="w-3.5 h-3.5" />
-                        <span>Avicenna</span>
-                      </button>
-                    )}
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <div className="ml-3 mr-2 flex items-center gap-2 group cursor-pointer">
+                              <span className={`text-xs font-medium transition-colors ${aiEnabled ? "text-primary" : "text-muted-foreground group-hover:text-foreground"}`}>Avicenna</span>
+                              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                                <Switch
+                                  checked={aiEnabled}
+                                  onCheckedChange={setAiEnabled}
+                                  className={`data-[state=checked]:bg-primary transition-all ${aiEnabled ? "shadow-md shadow-primary/30" : ""}`}
+                                />
+                              </motion.div>
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent side="top" className="text-xs max-w-[200px]">
+                            <p>AI-powered search with detailed explanations and medical insights</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      )}
                     {/* <Pill className="w-4 h-4 text-muted-foreground ml-4 shrink-0" /> */}
                     <textarea
                       value={input}
@@ -615,19 +621,23 @@ const MedicineSearch = () => {
           >
             <div className={`rounded-3xl shadow-card flex items-center ${aiEnabled ? "ai-border-glow" : "glass"}`}>
               {HAS_AI_KEY && (
-                <button
-                  type="button"
-                  onClick={() => setAiEnabled(!aiEnabled)}
-                  disabled={isLoading}
-                  className={`ml-3 mr-1 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1.5 ${
-                    aiEnabled
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-muted text-muted-foreground hover:text-foreground"
-                  }`}
-                >
-                  <Zap className="w-3.5 h-3.5" />
-                  <span>Avicenna</span>
-                </button>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div className="ml-3 mr-2 flex items-center gap-2 group cursor-pointer">
+                      <span className={`text-xs font-medium transition-colors ${aiEnabled ? "text-primary" : "text-muted-foreground group-hover:text-foreground"}`}>Avicenna</span>
+                      <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                        <Switch
+                          checked={aiEnabled}
+                          onCheckedChange={setAiEnabled}
+                          className={`data-[state=checked]:bg-primary transition-all ${aiEnabled ? "shadow-md shadow-primary/30" : ""}`}
+                        />
+                      </motion.div>
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent side="top" className="text-xs max-w-[200px]">
+                    <p>AI-powered search with detailed explanations and medical insights</p>
+                  </TooltipContent>
+                </Tooltip>
               )}
               {/* <Pill className="w-4 h-4 text-muted-foreground ml-2 shrink-0" /> */}
               <textarea
