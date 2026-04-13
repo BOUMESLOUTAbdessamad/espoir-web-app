@@ -436,7 +436,7 @@ const MedicineSearch = () => {
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <div className="ml-3 mr-2 flex items-center gap-2 group cursor-pointer">
-                              <span className={`text-xs font-medium transition-colors ${aiEnabled ? "text-primary" : "text-muted-foreground group-hover:text-foreground"}`}>Avicenna</span>
+                              <span className={`text-xs font-medium transition-colors ${aiEnabled ? "text-primary" : "text-muted-foreground group-hover:text-foreground"}`}>AI Mode</span>
                               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                                 <Switch
                                   checked={aiEnabled}
@@ -624,7 +624,7 @@ const MedicineSearch = () => {
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <div className="ml-3 mr-2 flex items-center gap-2 group cursor-pointer">
-                      <span className={`text-xs font-medium transition-colors ${aiEnabled ? "text-primary" : "text-muted-foreground group-hover:text-foreground"}`}>Avicenna</span>
+                      <span className={`text-xs font-medium transition-colors ${aiEnabled ? "text-primary" : "text-muted-foreground group-hover:text-foreground"}`}>AI Mode</span>
                       <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                         <Switch
                           checked={aiEnabled}
