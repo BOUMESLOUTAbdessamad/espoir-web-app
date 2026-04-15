@@ -13,10 +13,11 @@ const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL ?? "http://localhost:500
 const OPENROUTER_API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY;
 const HAS_AI_KEY = Boolean(OPENROUTER_API_KEY);
 
-const MOCK_RESPONSES: Record<string, { text: string; sideEffects: string[] }> = {
+const MOCK_RESPONSES: Record<string, { text: string;
+ }> = {
   default: {
     text: "I found information about this medication. Here are the pharmacies where it may be available, along with potential side effects to be aware of.",
-    sideEffects: ["Nausea", "Headache", "Dizziness", "Fatigue", "Dry mouth"],
+    // sideEffects: ["Nausea", "Headache", "Dizziness", "Fatigue", "Dry mouth"],
   },
 };
 
@@ -339,7 +340,7 @@ const MedicineSearch = () => {
             ? `**${medicineLabel}** - ${response.text}`
             : `**${medicineLabel}** - no pharmacy currently has this medicine listed as available.`,
         pharmacies,
-        sideEffects: response.sideEffects,
+        // sideEffects: response.sideEffects,
       };
 
       setMessages((prev) => [...prev, assistantMessage]);
@@ -516,7 +517,7 @@ const MedicineSearch = () => {
                     )}
 
                     {/* Side Effects */}
-                    {msg.sideEffects && (
+                    {/* {msg.sideEffects && (
                       <div className="glass rounded-xl p-3 space-y-2">
                         <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground tracking-wide">
                           <AlertTriangle className="w-3.5 h-3.5 text-accent" />
@@ -530,14 +531,14 @@ const MedicineSearch = () => {
                           ))}
                         </div>
                       </div>
-                    )}
+                    )} */}
 
                     {/* Pharmacies */}
                     {msg.pharmacies && (
                       <div className="space-y-2">
                         <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground uppercase tracking-wide">
                           <MapPin className="w-3.5 h-3.5 text-primary" />
-                          Nearby Pharmacies
+                            Pharmacies Available
                         </div>
                         {msg.pharmacies.map((pharmacy) => (
                           <div key={pharmacy.id} className="glass rounded-xl p-3 flex items-center justify-between gap-3">
