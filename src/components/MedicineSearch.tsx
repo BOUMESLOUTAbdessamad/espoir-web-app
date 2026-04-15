@@ -538,7 +538,7 @@ const MedicineSearch = () => {
                       <div className="space-y-2">
                         <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground uppercase tracking-wide">
                           <MapPin className="w-3.5 h-3.5 text-primary" />
-                            Pharmacies Available
+                            Available Pharmacies 
                         </div>
                         {msg.pharmacies.map((pharmacy) => (
                           <div key={pharmacy.id} className="glass rounded-xl p-3 flex items-center justify-between gap-3">
