@@ -392,23 +392,20 @@ const MedicineSearch = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
-              className="flex flex-col items-center justify-center h-full gap-6 text-center"
+              className="flex flex-col items-center justify-center h-full gap-6 text-left"
             >
               <motion.div
                 initial={{ scale: 0.8 }}
                 animate={{ scale: 1 }}
                 transition={{ type: "spring", stiffness: 200 }}
               >
-                <div className="w-16 h-16 rounded-2xl bg-gradient-warm flex items-center justify-center shadow-glow">
-                  <Sparkles className="w-8 h-8 text-primary-foreground" />
-                </div>
               </motion.div>
               <div>
                 <h2 className="text-2xl font-bold mb-2">
-                  <GradientText text="Avicenna" neon className="text-2xl font-bold" />
+                  <GradientText text="Avicenna" neon className="text-3xl font-bold" />
                 </h2>
-                <p className="text-muted-foreground text-sm max-w-md">
-                  Search for any medicine - find availability in nearby pharmacies and learn about side effects.
+                <p className="text-muted-foreground text-lg max-w-md">
+                  Search for any medicine - find availability in nearby pharmacies and Learn More.
                 </p>
               </div>
               <div className="flex flex-wrap gap-2 justify-center max-w-md">
