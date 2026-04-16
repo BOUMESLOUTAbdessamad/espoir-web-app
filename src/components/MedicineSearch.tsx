@@ -128,35 +128,96 @@ const MarkdownContent = ({ content }: { content: string }) => {
 };
 
 const StyledResponse = ({ content }: { content: string }) => {
-  const lines = content.split("\n").filter((l) => l.trim());
-  const parts: { text: string; isBold: boolean }[] = [];
-  
-  for (const line of lines) {
-    const segments = line.split(/(\*\*[^*]+\*\*)/g);
-    for (const segment of segments) {
-      if (segment.startsWith("**") && segment.endsWith("**")) {
-        parts.push({ text: segment.replace(/\*\*/g, ""), isBold: true });
-      } else if (segment.trim()) {
-        parts.push({ text: segment, isBold: false });
+  const renderBold = (text: string, key: number | string) => {
+    const parts = text.split(/(\*\*[^*]+\*\*)/g);
+    return parts.map((part, idx) => {
+      if (part.startsWith("**") && part.endsWith("**")) {
+        return <strong key={`${key}-${idx}`} className="font-bold">{part.replace(/\*\*/g, "")}</strong>;
       }
+      return <span key={`${key}-${idx}`}>{part}</span>;
+    });
+  };
+
+  const lines = content.split("\n");
+  
+  const elements: React.ReactNode[] = [];
+  let listBuffer: { text: string; isOrdered: boolean }[] = [];
+  let listKey = 0;
+
+  const flushList = () => {
+    if (listBuffer.length === 0) return null;
+    const items = listBuffer;
+    listBuffer = [];
+    const key = listKey++;
+    if (items[0].isOrdered) {
+      return (
+        <ol key={`ol-${key}`} className="list-decimal list-inside space-y-1.5 my-2 ml-4">
+          {items.map((item, idx) => (
+            <li key={`${key}-${idx}`} className="text-sm text-foreground leading-relaxed">
+              {renderBold(item.text, `${key}-li-${idx}`)}
+            </li>
+          ))}
+        </ol>
+      );
+    }
+    return (
+      <ul key={`ul-${key}`} className="list-disc list-inside space-y-1.5 my-2 ml-4">
+        {items.map((item, idx) => (
+          <li key={`${key}-${idx}`} className="text-sm text-foreground leading-relaxed">
+            {renderBold(item.text, `${key}-li-${idx}`)}
+          </li>
+        ))}
+      </ul>
+    );
+  };
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    const trimmed = line.trim();
+    
+    if (!trimmed) {
+      const list = flushList();
+      if (list) elements.push(list);
+      continue;
+    }
+
+    if (/^\d+\.\s/.test(trimmed)) {
+      const list = flushList();
+      if (list) elements.push(list);
+      listBuffer = [{ text: trimmed.replace(/^\d+\.\s/, ""), isOrdered: true }];
+      while (i + 1 < lines.length && /^\d+\.\s/.test(lines[i + 1].trim())) {
+        i++;
+        listBuffer.push({ text: lines[i].trim().replace(/^\d+\.\s/, ""), isOrdered: true });
+      }
+      elements.push(flushList());
+    } else if (/^[-*]\s/.test(trimmed)) {
+      const list = flushList();
+      if (list) elements.push(list);
+      listBuffer = [{ text: trimmed.replace(/^[-*]\s/, ""), isOrdered: false }];
+      while (i + 1 < lines.length && /^[-*]\s/.test(lines[i + 1].trim())) {
+        i++;
+        listBuffer.push({ text: lines[i].trim().replace(/^[-*]\s/, ""), isOrdered: false });
+      }
+      elements.push(flushList());
+    } else {
+      const list = flushList();
+      if (list) elements.push(list);
+      elements.push(
+        <p key={`p-${i}`} className="text-sm text-foreground leading-relaxed my-2">
+          {renderBold(line, `p-${i}`)}
+        </p>
+      );
     }
   }
 
-  if (parts.length === 0) {
+  const list = flushList();
+  if (list) elements.push(list);
+
+  if (elements.length === 0) {
     return <p className="text-sm text-foreground leading-relaxed">{content}</p>;
   }
 
-  return (
-    <p className="text-sm text-foreground leading-relaxed">
-      {parts.map((part, idx) => (
-        part.isBold ? (
-          <strong key={idx} className="font-bold">{part.text}</strong>
-        ) : (
-          <span key={idx}>{part.text} </span>
-        )
-      ))}
-    </p>
-  );
+  return <div className="space-y-1">{elements}</div>;
 };
 
 const MedicineSearch = () => {
