@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowUp , MapPin, AlertTriangle, Sparkles, Bot, User, Navigation } from "lucide-react";
+import { ArrowUp , MapPin, AlertTriangle, Sparkles, Bot, User, Navigation, Copy, Check } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import SearchHistory from "./SearchHistory";
@@ -173,6 +173,14 @@ const MedicineSearch = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [slowSearch, setSlowSearch] = useState(false);
   const [currentModel, setCurrentModel] = useState<string | null>(null);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+
+  const handleCopyMessage = useCallback((msg: Message) => {
+    const textToCopy = msg.content;
+    navigator.clipboard.writeText(textToCopy);
+    setCopiedId(msg.id);
+    setTimeout(() => setCopiedId(null), 3000);
+  }, []);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -498,9 +506,22 @@ const MedicineSearch = () => {
                         <div className="p-4 space-y-3">
                           <StyledResponse content={msg.content} />
                           <div className="pt-2 mt-3 border-t border-primary/10">
-                            <p className="text-[10px] text-muted-foreground italic">
-                              * Always consult a healthcare professional
-                            </p>
+                            <div className="flex items-center justify-between">
+                              <p className="text-[10px] text-muted-foreground italic">
+                                * Always consult a healthcare professional
+                              </p>
+                              <button
+                                onClick={() => handleCopyMessage(msg)}
+                                className="flex items-center justify-center w-7 h-7 rounded-lg hover:bg-primary/10 text-muted-foreground hover:text-primary transition-colors"
+                                title="Copy to clipboard"
+                              >
+                                {copiedId === msg.id ? (
+                                  <Check className="w-3.5 h-3.5 text-emerald-500" />
+                                ) : (
+                                  <Copy className="w-3.5 h-3.5" />
+                                )}
+                              </button>
+                            </div>
                           </div>
                         </div>
                       </div>
