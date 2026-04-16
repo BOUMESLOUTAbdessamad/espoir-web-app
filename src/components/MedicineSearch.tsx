@@ -495,9 +495,6 @@ const MedicineSearch = () => {
                   <div className={`max-w-[85%] space-y-3 ${msg.role === "user" ? "order-first" : ""}`}>
                     {msg.role === "assistant" ? (
                       <div className="bg-muted rounded-2xl rounded-bl-md overflow-hidden">
-                        <div className="px-4 py-3 bg-gradient-to-r from-primary/10 to-primary/5 border-b border-primary/10">
-                          <h3 className="font-bold text-foreground text-sm">Medical Information</h3>
-                        </div>
                         <div className="p-4 space-y-3">
                           <StyledResponse content={msg.content} />
                           <div className="pt-2 mt-3 border-t border-primary/10">
