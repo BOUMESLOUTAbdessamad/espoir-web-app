@@ -16,8 +16,7 @@ const HAS_AI_KEY = Boolean(OPENROUTER_API_KEY);
 const MOCK_RESPONSES: Record<string, { text: string;
  }> = {
   default: {
-    text: "I found information about this medication. Here are the pharmacies where it may be available, along with potential side effects to be aware of.",
-    // sideEffects: ["Nausea", "Headache", "Dizziness", "Fatigue", "Dry mouth"],
+    text: "I found information about this medication. Here are the pharmacies where it may be available.",
   },
 };
 
@@ -591,23 +590,6 @@ const MedicineSearch = () => {
                         {msg.content}
                       </div>
                     )}
-
-                    {/* Side Effects */}
-                    {/* {msg.sideEffects && (
-                      <div className="glass rounded-xl p-3 space-y-2">
-                        <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground tracking-wide">
-                          <AlertTriangle className="w-3.5 h-3.5 text-accent" />
-                          Side Effects
-                        </div>
-                        <div className="flex flex-wrap gap-1.5">
-                          {msg.sideEffects.map((effect) => (
-                            <span key={effect} className="px-2 py-0.5 text-xs rounded-full bg-secondary text-secondary-foreground">
-                              {effect}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                    )} */}
 
                     {/* Pharmacies */}
                     {msg.pharmacies && (
