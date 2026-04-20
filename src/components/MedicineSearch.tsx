@@ -3,10 +3,11 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ArrowUp , MapPin, AlertTriangle, Sparkles, Bot, User, Navigation, Copy, Check } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import SearchHistory from "./SearchHistory";
 import { GradientText } from "./animate-ui/primitives/texts/gradient";
 import { Medicine, Pharmacy, Message, PharmacyApiResponse } from "@/Types/MainTypes";
-import { getAIResponse, chatWithAI, ChatMessage } from "@/services/openrouter";
+import { getAIResponse, chatWithAI, ChatMessage, GROQ_MODELS } from "@/services/openrouter";
 import Header from "./layouts/Header";
 
 const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL ?? "http://localhost:5000/api/v1").replace(/\/$/, "");
@@ -233,6 +234,7 @@ const MedicineSearch = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [slowSearch, setSlowSearch] = useState(false);
   const [currentModel, setCurrentModel] = useState<string | null>(null);
+  const [selectedModel, setSelectedModel] = useState<string>(GROQ_MODELS[0]);
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
   const handleCopyMessage = useCallback((msg: Message) => {
@@ -324,7 +326,7 @@ const MedicineSearch = () => {
 
       messages.push({ role: "user", content: query });
 
-      const { content: aiResponse, model } = await chatWithAI(messages);
+      const { content: aiResponse, model } = await chatWithAI(messages, { model: selectedModel });
       setCurrentModel(model);
       
       setMessages((prev) => [
@@ -500,23 +502,41 @@ const MedicineSearch = () => {
                 >
                   <div className={`border rounded-3xl shadow-card flex items-center ${aiEnabled ? "ai-border-glow" : "glass"}`}>
                       {HAS_AI_KEY && (
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <div className="ml-3 mr-2 flex items-center gap-2 group cursor-pointer">
-                              <span className={`text-xs font-medium transition-colors ${aiEnabled ? "text-primary" : "text-muted-foreground group-hover:text-foreground"}`}>AI Mode</span>
-                              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                                <Switch
-                                  checked={aiEnabled}
-                                  onCheckedChange={setAiEnabled}
-                                  className={`data-[state=checked]:bg-primary transition-all ${aiEnabled ? "shadow-md shadow-primary/30" : ""}`}
-                                />
-                              </motion.div>
+                        <>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <div className="ml-3 mr-2 flex items-center gap-2 group cursor-pointer">
+                                <span className={`text-xs font-medium transition-colors ${aiEnabled ? "text-primary" : "text-muted-foreground group-hover:text-foreground"}`}>AI Mode</span>
+                                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                                  <Switch
+                                    checked={aiEnabled}
+                                    onCheckedChange={setAiEnabled}
+                                    className={`data-[state=checked]:bg-primary transition-all ${aiEnabled ? "shadow-md shadow-primary/30" : ""}`}
+                                  />
+                                </motion.div>
+                              </div>
+                            </TooltipTrigger>
+                            <TooltipContent side="top" className="text-xs max-w-[200px]">
+                              <p>AI-powered search with detailed explanations and medical insights</p>
+                            </TooltipContent>
+                          </Tooltip>
+                          {aiEnabled && (
+                            <div className="mr-2 flex items-center gap-1">
+                              <Select value={selectedModel} onValueChange={setSelectedModel}>
+                                <SelectTrigger className="h-7 w-[130px] text-xs">
+                                  <SelectValue placeholder="Select model" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {GROQ_MODELS.map((model) => (
+                                    <SelectItem key={model} value={model} className="text-xs">
+                                      {model}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
                             </div>
-                          </TooltipTrigger>
-                          <TooltipContent side="top" className="text-xs max-w-[200px]">
-                            <p>AI-powered search with detailed explanations and medical insights</p>
-                          </TooltipContent>
-                        </Tooltip>
+                          )}
+                        </>
                       )}
                     {/* <Pill className="w-4 h-4 text-muted-foreground ml-4 shrink-0" /> */}
                     <textarea
@@ -681,23 +701,41 @@ const MedicineSearch = () => {
           >
             <div className={`rounded-3xl shadow-card flex items-center ${aiEnabled ? "ai-border-glow" : "glass"}`}>
               {HAS_AI_KEY && (
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <div className="ml-3 mr-2 flex items-center gap-2 group cursor-pointer">
-                      <span className={`text-xs font-medium transition-colors ${aiEnabled ? "text-primary" : "text-muted-foreground group-hover:text-foreground"}`}>AI Mode</span>
-                      <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                        <Switch
-                          checked={aiEnabled}
-                          onCheckedChange={setAiEnabled}
-                          className={`data-[state=checked]:bg-primary transition-all ${aiEnabled ? "shadow-md shadow-primary/30" : ""}`}
-                        />
-                      </motion.div>
+                <>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div className="ml-3 mr-2 flex items-center gap-2 group cursor-pointer">
+                        <span className={`text-xs font-medium transition-colors ${aiEnabled ? "text-primary" : "text-muted-foreground group-hover:text-foreground"}`}>AI Mode</span>
+                        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                          <Switch
+                            checked={aiEnabled}
+                            onCheckedChange={setAiEnabled}
+                            className={`data-[state=checked]:bg-primary transition-all ${aiEnabled ? "shadow-md shadow-primary/30" : ""}`}
+                          />
+                        </motion.div>
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent side="top" className="text-xs max-w-[200px]">
+                      <p>AI-powered search with detailed explanations and medical insights</p>
+                    </TooltipContent>
+                  </Tooltip>
+                  {aiEnabled && (
+                    <div className="mr-2 flex items-center gap-1">
+                      <Select value={selectedModel} onValueChange={setSelectedModel}>
+                        <SelectTrigger className="h-7 w-[130px] text-xs">
+                          <SelectValue placeholder="Select model" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {GROQ_MODELS.map((model) => (
+                            <SelectItem key={model} value={model} className="text-xs">
+                              {model}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
-                  </TooltipTrigger>
-                  <TooltipContent side="top" className="text-xs max-w-[200px]">
-                    <p>AI-powered search with detailed explanations and medical insights</p>
-                  </TooltipContent>
-                </Tooltip>
+                  )}
+                </>
               )}
               {/* <Pill className="w-4 h-4 text-muted-foreground ml-2 shrink-0" /> */}
               <textarea
