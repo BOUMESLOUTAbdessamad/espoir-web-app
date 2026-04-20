@@ -62,7 +62,8 @@ const [sidebarOpen, setSidebarOpen] = useState(false);
             transition={{ delay: 0.15 }}
             className="space-y-3"
           >
-            <GradientText text="Avicenna" neon className="text-4xl font-extrabold" />
+            <GradientText text="Avicenna" neon className="text-4xl font-extrabold" /> 
+            <span className="text-[10px] font-medium text-blue-500 bg-blue-500/10 px-1.5 rounded-lg">Beta</span>
             <p className="text-muted-foreground text-sm max-w-sm mx-auto leading-relaxed">
               Your AI-powered medicine assistant. Find availability, locate pharmacies, and stay informed — all in one place.
             </p>

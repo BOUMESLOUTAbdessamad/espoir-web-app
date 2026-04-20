@@ -472,6 +472,7 @@ const MedicineSearch = () => {
               <div>
                 <h2 className="text-2xl font-bold mb-2">
                   <GradientText text="Avicenna" neon className="text-3xl font-bold" />
+                  <span className="text-[10px] font-medium text-blue-500 bg-blue-500/10 px-1.5  rounded-lg">Beta</span>
                 </h2>
                 <p className="text-muted-foreground text-lg max-w-md">
                   Search for any medicine - find availability in nearby pharmacies and Learn More.
