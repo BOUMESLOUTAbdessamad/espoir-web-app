@@ -18,7 +18,7 @@ const FREE_MODELS = [
   "nvidia/nemotron-3-super-120b-a12b:free"
 ];
 
-const GROQ_MODELS = [
+export const GROQ_MODELS = [
   "llama-3.1-8b-instant",
   "gemma2-9b-it",
   "mixtral-8x7b-32768",
@@ -56,7 +56,9 @@ async function chatWithGroq(
     throw new Error("Groq API key not configured. Add VITE_GROQ_API_KEY to .env");
   }
 
-  for (const model of GROQ_MODELS) {
+  const modelsToTry = options.model ? [options.model] : GROQ_MODELS;
+
+  for (const model of modelsToTry) {
     try {
       const response = await fetch(GROQ_API_URL, {
         method: "POST",

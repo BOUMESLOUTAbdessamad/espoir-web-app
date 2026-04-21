@@ -3,10 +3,11 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ArrowUp , MapPin, AlertTriangle, Sparkles, Bot, User, Navigation, Copy, Check } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import SearchHistory from "./SearchHistory";
 import { GradientText } from "./animate-ui/primitives/texts/gradient";
 import { Medicine, Pharmacy, Message, PharmacyApiResponse } from "@/Types/MainTypes";
-import { getAIResponse, chatWithAI, ChatMessage } from "@/services/openrouter";
+import { getAIResponse, chatWithAI, ChatMessage, GROQ_MODELS } from "@/services/openrouter";
 import Header from "./layouts/Header";
 
 const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL ?? "http://localhost:5000/api/v1").replace(/\/$/, "");
@@ -233,6 +234,7 @@ const MedicineSearch = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [slowSearch, setSlowSearch] = useState(false);
   const [currentModel, setCurrentModel] = useState<string | null>(null);
+  const [selectedModel, setSelectedModel] = useState<string>(GROQ_MODELS[0]);
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
   const handleCopyMessage = useCallback((msg: Message) => {
@@ -324,7 +326,7 @@ const MedicineSearch = () => {
 
       messages.push({ role: "user", content: query });
 
-      const { content: aiResponse, model } = await chatWithAI(messages);
+      const { content: aiResponse, model } = await chatWithAI(messages, { model: selectedModel });
       setCurrentModel(model);
       
       setMessages((prev) => [
@@ -498,27 +500,7 @@ const MedicineSearch = () => {
                   }}
                   className="relative"
                 >
-                  <div className={`border rounded-3xl shadow-card flex items-center ${aiEnabled ? "ai-border-glow" : "glass"}`}>
-                      {HAS_AI_KEY && (
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <div className="ml-3 mr-2 flex items-center gap-2 group cursor-pointer">
-                              <span className={`text-xs font-medium transition-colors ${aiEnabled ? "text-primary" : "text-muted-foreground group-hover:text-foreground"}`}>AI Mode</span>
-                              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                                <Switch
-                                  checked={aiEnabled}
-                                  onCheckedChange={setAiEnabled}
-                                  className={`data-[state=checked]:bg-primary transition-all ${aiEnabled ? "shadow-md shadow-primary/30" : ""}`}
-                                />
-                              </motion.div>
-                            </div>
-                          </TooltipTrigger>
-                          <TooltipContent side="top" className="text-xs max-w-[200px]">
-                            <p>AI-powered search with detailed explanations and medical insights</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      )}
-                    {/* <Pill className="w-4 h-4 text-muted-foreground ml-4 shrink-0" /> */}
+                  <div className={`border rounded-3xl shadow-card flex flex-col gap-2 ${aiEnabled ? "ai-border-glow" : "glass"}`}>
                     <textarea
                       value={input}
                       onChange={(e) => setInput(e.target.value)}
@@ -528,18 +510,55 @@ const MedicineSearch = () => {
                           handleSearch(input);
                         }
                       }}
-                      placeholder="Search for a medicine..."
+                      placeholder={messages.length > 0? "Replay..." : "How can I help you today?"}
                       rows={1}
                       className="flex-1 bg-transparent px-3 py-3.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none resize-none min-h-[24px] max-h-32 overflow-y-auto"
                       disabled={isLoading}
                     />
-                    <button
-                      type="submit"
-                      disabled={!input.trim() || isLoading}
-                      className="mr-2 w-8 h-8 rounded-xl bg-primary text-primary-foreground flex items-center justify-center disabled:opacity-30 hover:opacity-90 transition-opacity"
-                    >
-                      <ArrowUp className="w-4 h-4" />
-                    </button>
+                    <div className="flex items-center justify-between px-2.5 py-2.5 ">
+                      {HAS_AI_KEY && (
+                        <>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <div className="flex items-center gap-2 group cursor-pointer">
+                                <span className={`text-xs font-medium transition-colors ${aiEnabled ? "text-primary" : "text-muted-foreground group-hover:text-foreground"}`}>AI Mode</span>
+                                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                                  <Switch
+                                    checked={aiEnabled}
+                                    onCheckedChange={setAiEnabled}
+                                    className={`data-[state=checked]:bg-primary transition-all ${aiEnabled ? "shadow-md shadow-primary/30" : ""}`}
+                                  />
+                                </motion.div>
+                              </div>
+                            </TooltipTrigger>
+                            <TooltipContent side="top" className="text-xs max-w-[200px]">
+                              <p>AI-powered search with detailed explanations and medical insights</p>
+                            </TooltipContent>
+                          </Tooltip>
+                          {aiEnabled && (
+                            <Select value={selectedModel} onValueChange={setSelectedModel}>
+                              <SelectTrigger className="h-7 w-[130px] text-xs">
+                                <SelectValue placeholder="Select model" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {GROQ_MODELS.map((model) => (
+                                  <SelectItem key={model} value={model} className="text-xs">
+                                    {model}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          )}
+                        </>
+                      )}
+                      <button
+                        type="submit"
+                        disabled={!input.trim() || isLoading}
+                        className="w-8 h-8 rounded-xl bg-primary text-primary-foreground flex items-center justify-center disabled:opacity-30 hover:opacity-90 transition-opacity"
+                      >
+                        <ArrowUp className="w-4 h-4" />
+                      </button>
+                    </div>
                   </div>
                 </form>
                 <p className="text-[10px] text-muted-foreground text-center mt-2">
@@ -679,27 +698,7 @@ const MedicineSearch = () => {
             }}
             className="relative"
           >
-            <div className={`rounded-3xl shadow-card flex items-center ${aiEnabled ? "ai-border-glow" : "glass"}`}>
-              {HAS_AI_KEY && (
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <div className="ml-3 mr-2 flex items-center gap-2 group cursor-pointer">
-                      <span className={`text-xs font-medium transition-colors ${aiEnabled ? "text-primary" : "text-muted-foreground group-hover:text-foreground"}`}>AI Mode</span>
-                      <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                        <Switch
-                          checked={aiEnabled}
-                          onCheckedChange={setAiEnabled}
-                          className={`data-[state=checked]:bg-primary transition-all ${aiEnabled ? "shadow-md shadow-primary/30" : ""}`}
-                        />
-                      </motion.div>
-                    </div>
-                  </TooltipTrigger>
-                  <TooltipContent side="top" className="text-xs max-w-[200px]">
-                    <p>AI-powered search with detailed explanations and medical insights</p>
-                  </TooltipContent>
-                </Tooltip>
-              )}
-              {/* <Pill className="w-4 h-4 text-muted-foreground ml-2 shrink-0" /> */}
+            <div className={`rounded-3xl shadow-card flex flex-col gap-2 ${aiEnabled ? "ai-border-glow" : "glass"}`}>
               <textarea
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
@@ -709,18 +708,56 @@ const MedicineSearch = () => {
                     handleSearch(input);
                   }
                 }}
-                placeholder="Search for a medicine..."
+                placeholder={messages.length > 0? "Replay..." : "How can I help you today?"}
                 rows={1}
-                className={`flex-1 bg-transparent px-3 py-3.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none resize-none min-h-[24px] max-h-32 overflow-y-auto ${aiEnabled ? "ai-border-glow rounded-xl" : ""}`}
+                className="flex-1 bg-transparent px-3 py-3.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none resize-none min-h-[24px] max-h-32 overflow-y-auto"
                 disabled={isLoading}
               />
-              <button
-                type="submit"
-                disabled={!input.trim() || isLoading}
-                className="mr-2 w-8 h-8 rounded-xl bg-primary text-primary-foreground flex items-center justify-center disabled:opacity-30 hover:opacity-90 transition-opacity"
-              >
-                <ArrowUp className="w-4 h-4" />
-              </button>
+              {/* <div className="h-0.5 bg-zinc-200 mx-4"></div> */}
+              <div className="flex items-center justify-between px-2.5 py-2.5">
+                {HAS_AI_KEY && (
+                  <>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div className="flex items-center gap-2 group cursor-pointer">
+                          <span className={`text-xs font-medium transition-colors ${aiEnabled ? "text-primary" : "text-muted-foreground group-hover:text-foreground"}`}>AI Mode</span>
+                          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                            <Switch
+                              checked={aiEnabled}
+                              onCheckedChange={setAiEnabled}
+                              className={`data-[state=checked]:bg-primary transition-all ${aiEnabled ? "shadow-md shadow-primary/30" : ""}`}
+                            />
+                          </motion.div>
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent side="top" className="text-xs max-w-[200px]">
+                        <p>AI-powered search with detailed explanations and medical insights</p>
+                      </TooltipContent>
+                    </Tooltip>
+                    {aiEnabled && (
+                      <Select value={selectedModel} onValueChange={setSelectedModel}>
+                        <SelectTrigger className="h-7 w-[130px] text-xs">
+                          <SelectValue placeholder="Select model" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {GROQ_MODELS.map((model) => (
+                            <SelectItem key={model} value={model} className="text-xs ">
+                              {model}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    )}
+                  </>
+                )}
+                <button
+                  type="submit"
+                  disabled={!input.trim() || isLoading}
+                  className="w-8 h-8 rounded-xl bg-primary text-primary-foreground flex items-center justify-center disabled:opacity-30 hover:opacity-90 transition-opacity"
+                >
+                  <ArrowUp className="w-4 h-4" />
+                </button>
+              </div>
             </div>
           </form>
                     {aiEnabled && currentModel && (
