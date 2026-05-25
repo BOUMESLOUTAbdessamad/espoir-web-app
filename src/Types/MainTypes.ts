@@ -6,6 +6,7 @@ export interface Message {
   summary?: string;
   sections?: MessageSection[];
   pharmacies?: Pharmacy[];
+  medicines?: Medicine[];
   sideEffects?: string[];
 }
 
@@ -30,6 +31,7 @@ export interface Medicine {
   mark?: string;
   dci?: string;
   name?: string;
+  dosage?: string;
 }
 
 export interface PharmacyApiResponse {

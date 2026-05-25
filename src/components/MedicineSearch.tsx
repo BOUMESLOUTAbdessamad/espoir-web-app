@@ -1,10 +1,8 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowUp , MapPin, AlertTriangle, Sparkles, Bot, User, Navigation, Copy, Check } from "lucide-react";
-import { Switch } from "@/components/ui/switch";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { MapPin, AlertTriangle, Sparkles, Bot, User, Navigation, Copy, Check } from "lucide-react";
 import SearchHistory from "./SearchHistory";
+import SearchInput from "./SearchInput";
 import { GradientText } from "./animate-ui/primitives/texts/gradient";
 import { Medicine, Pharmacy, Message, PharmacyApiResponse } from "@/Types/MainTypes";
 import { getAIResponse, chatWithAI, ChatMessage, GROQ_MODELS } from "@/services/openrouter";
@@ -107,6 +105,63 @@ const tryResolveMedicineId = async (query: string): Promise<number | null> => {
   
 
   return null;
+};
+
+const findAllMedicines = async (query: string): Promise<Medicine[]> => {
+  const trimmed = query.trim();
+  if (!trimmed) {
+    return [];
+  }
+
+  if (/^\d+$/.test(trimmed)) {
+    const medicineId = Number(trimmed);
+    try {
+      const res = await fetch(`${API_BASE_URL}/medicines/${medicineId}`);
+      if (res.ok) {
+        const payload = (await res.json()) as unknown;
+        const med = payload as Medicine;
+        return med.id ? [med] : [];
+      }
+    } catch {
+      return [];
+    }
+    return [];
+  }
+
+  const encoded = encodeURIComponent(trimmed);
+  const url = `${API_BASE_URL}/medicines?q=${encoded}`;
+
+  try {
+    const res = await fetch(url);
+    if (!res.ok) {
+      return [];
+    }
+
+    const payload = (await res.json()) as unknown;
+    const medicines = getMedicinesFromPayload(payload);
+    
+    const exactMatches = medicines.filter((med) => {
+      const values = [med.mark, med.dci, med.name]
+        .filter(Boolean)
+        .map((value) => String(value).toLowerCase());
+      return values.includes(trimmed.toLowerCase());
+    });
+
+    if (exactMatches.length > 0) {
+      return exactMatches;
+    }
+
+    const partialMatches = medicines.filter((med) => {
+      const values = [med.mark, med.dci, med.name]
+        .filter(Boolean)
+        .map((value) => String(value).toLowerCase());
+      return values.some((value) => value.includes(trimmed.toLowerCase()));
+    });
+
+    return partialMatches;
+  } catch {
+    return [];
+  }
 };
 
 const MarkdownContent = ({ content }: { content: string }) => {
@@ -288,6 +343,7 @@ const MedicineSearch = () => {
       const medicineId = await tryResolveMedicineId(query);
       
       let pharmacyData: { pharmacies?: Pharmacy[]; medicineName: string; medicineDCI?: string; medicineMark?: string } | null = null;
+      let medicines: Medicine[] = [];
       
       if (medicineId) {
         const res = await fetch(`${API_BASE_URL}/medicines/${medicineId}/pharmacies?limit=5`);
@@ -299,6 +355,12 @@ const MedicineSearch = () => {
             medicineDCI: payload.medicine_dci,
             medicineMark: payload.medicine_mark,
           };
+          medicines = [{
+            id: payload.medicine_id,
+            mark: payload.medicine_mark,
+            dci: payload.medicine_dci,
+            name: payload.medicine_dci || payload.medicine_mark || query,
+          }];
         }
       }
 
@@ -336,6 +398,7 @@ const MedicineSearch = () => {
           role: "assistant",
           content: aiResponse,
           pharmacies: pharmacyData?.pharmacies,
+          medicines,
         },
       ]);
     } catch (error) {
@@ -357,9 +420,9 @@ const MedicineSearch = () => {
   const handleDbSearch = async (query: string) => {
     await new Promise((r) => setTimeout(r, 1500));
     try {
-      const medicineId = await tryResolveMedicineId(query);
+      const allMedicines = await findAllMedicines(query);
 
-      if (!medicineId) {
+      if (allMedicines.length === 0) {
         setMessages((prev) => [
           ...prev,
           {
@@ -371,36 +434,20 @@ const MedicineSearch = () => {
         return;
       }
 
-      const res = await fetch(`${API_BASE_URL}/medicines/${medicineId}/pharmacies?limit=5`);
+      const firstMedicineId = allMedicines[0].id;
+      const res = await fetch(`${API_BASE_URL}/medicines/${firstMedicineId}/pharmacies?limit=5`);
       const payload = (await res.json()) as PharmacyApiResponse | { error?: string };
 
-      if (!res.ok) {
-        const errorMessage = "error" in payload ? payload.error : "Failed to fetch pharmacies.";
-
-        if (
-          res.status === 404 ||
-          String(errorMessage ?? "")
-            .toLowerCase()
-            .includes("medicine not found")
-        ) {
-          setMessages((prev) => [
-            ...prev,
-            {
-              id: (Date.now() + 1).toString(),
-              role: "assistant",
-              content: `Medicine **${query}** was not found in the database.`,
-            },
-          ]);
-          return;
-        }
-
-        throw new Error(errorMessage || "Failed to fetch pharmacies.");
+      let pharmacies: Pharmacy[] = [];
+      
+      if (res.ok) {
+        const apiPayload = payload as PharmacyApiResponse;
+        pharmacies = apiPayload.pharmacies.map(normalizePharmacy);
       }
 
-      const pharmacies = (payload as PharmacyApiResponse).pharmacies.map(normalizePharmacy);
       const response = MOCK_RESPONSES.default;
       const medicineLabel =
-        (payload as PharmacyApiResponse).medicine_mark || (payload as PharmacyApiResponse).medicine_dci || query;
+        allMedicines[0].mark || allMedicines[0].dci || allMedicines[0].name || query;
 
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
@@ -410,6 +457,7 @@ const MedicineSearch = () => {
             ? `**${medicineLabel}** - ${response.text}`
             : `**${medicineLabel}** - no pharmacy currently has this medicine listed as available.`,
         pharmacies,
+        medicines: allMedicines,
         // sideEffects: response.sideEffects,
       };
 
@@ -493,74 +541,19 @@ const MedicineSearch = () => {
 
               {/* Search input inside landing */}
               <div className="w-full max-w-md mt-4">
-                <form
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    handleSearch(input);
-                  }}
-                  className="relative"
-                >
-                  <div className={`border rounded-3xl shadow-card flex flex-col gap-2 ${aiEnabled ? "ai-border-glow" : "glass"}`}>
-                    <textarea
-                      value={input}
-                      onChange={(e) => setInput(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter" && !e.shiftKey) {
-                          e.preventDefault();
-                          handleSearch(input);
-                        }
-                      }}
-                      placeholder={messages.length > 0? "Replay..." : "How can I help you today?"}
-                      rows={1}
-                      className="flex-1 bg-transparent px-3 py-3.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none resize-none min-h-[24px] max-h-32 overflow-y-auto"
-                      disabled={isLoading}
-                    />
-                    <div className="flex items-center justify-between px-2.5 py-2.5 ">
-                      {HAS_AI_KEY && (
-                        <>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <div className="flex items-center gap-2 group cursor-pointer">
-                                <span className={`text-xs font-medium transition-colors ${aiEnabled ? "text-primary" : "text-muted-foreground group-hover:text-foreground"}`}>AI Mode</span>
-                                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                                  <Switch
-                                    checked={aiEnabled}
-                                    onCheckedChange={setAiEnabled}
-                                    className={`data-[state=checked]:bg-primary transition-all ${aiEnabled ? "shadow-md shadow-primary/30" : ""}`}
-                                  />
-                                </motion.div>
-                              </div>
-                            </TooltipTrigger>
-                            <TooltipContent side="top" className="text-xs max-w-[200px]">
-                              <p>AI-powered search with detailed explanations and medical insights</p>
-                            </TooltipContent>
-                          </Tooltip>
-                          {aiEnabled && (
-                            <Select value={selectedModel} onValueChange={setSelectedModel}>
-                              <SelectTrigger className="h-7 w-[130px] text-xs">
-                                <SelectValue placeholder="Select model" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {GROQ_MODELS.map((model) => (
-                                  <SelectItem key={model} value={model} className="text-xs">
-                                    {model}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          )}
-                        </>
-                      )}
-                      <button
-                        type="submit"
-                        disabled={!input.trim() || isLoading}
-                        className="w-8 h-8 rounded-xl bg-primary text-primary-foreground flex items-center justify-center disabled:opacity-30 hover:opacity-90 transition-opacity"
-                      >
-                        <ArrowUp className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </div>
-                </form>
+                <SearchInput
+                  value={input}
+                  onChange={setInput}
+                  onSubmit={() => handleSearch(input)}
+                  placeholder={messages.length > 0 ? "Replay..." : "How can I help you today?"}
+                  isLoading={isLoading}
+                  aiEnabled={aiEnabled}
+                  onAiEnabledChange={setAiEnabled}
+                  selectedModel={selectedModel}
+                  onSelectedModelChange={setSelectedModel}
+                  hasAiKey={HAS_AI_KEY}
+                  containerClassName="border"
+                />
                 <p className="text-[10px] text-muted-foreground text-center mt-2">
                   Powered by Espoir AI - Not a substitute for medical advice
                 </p>
@@ -608,6 +601,30 @@ const MedicineSearch = () => {
                     ) : (
                       <div className="bg-primary text-primary-foreground rounded-2xl rounded-br-md px-4 py-2.5 text-sm leading-relaxed">
                         {msg.content}
+                      </div>
+                    )}
+
+                    {/* Medicines */}
+                    {msg.medicines && (
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                          <Sparkles className="w-3.5 h-3.5 text-primary" />
+                            Medicines Found
+                        </div>
+                        {msg.medicines.map((medicine) => (
+                          <div key={medicine.id} className="glass rounded-xl p-3 flex items-center justify-between gap-3">
+                            <div className="min-w-0 flex-1">
+                              <div className="text-sm font-medium text-foreground truncate">{medicine.mark || medicine.name || "Unknown"}</div>
+                              <div className="text-xs text-muted-foreground truncate">DCI: {medicine.dci || "N/A"}</div>
+                              <div className="text-xs text-muted-foreground mt-0.5"> Dosage: {medicine.dosage || "N/A"}</div>
+                            </div>
+                            <div className="flex items-center gap-2 shrink-0">
+                              <div className="text-xs font-medium p-2 rounded-lg bg-primary/10 text-primary">
+                                #{medicine.id}
+                              </div>
+                            </div>
+                          </div>
+                        ))}
                       </div>
                     )}
 
@@ -691,76 +708,19 @@ const MedicineSearch = () => {
       {/* Input - only in chat mode */}
       {!showLanding && (
         <div className="shrink-0 pb-6 pt-2">
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              handleSearch(input);
-            }}
-            className="relative"
-          >
-            <div className={`rounded-3xl shadow-card flex flex-col gap-2 ${aiEnabled ? "ai-border-glow" : "glass"}`}>
-              <textarea
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && !e.shiftKey) {
-                    e.preventDefault();
-                    handleSearch(input);
-                  }
-                }}
-                placeholder={messages.length > 0? "Replay..." : "How can I help you today?"}
-                rows={1}
-                className="flex-1 bg-transparent px-3 py-3.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none resize-none min-h-[24px] max-h-32 overflow-y-auto"
-                disabled={isLoading}
-              />
-              {/* <div className="h-0.5 bg-zinc-200 mx-4"></div> */}
-              <div className="flex items-center justify-between px-2.5 py-2.5">
-                {HAS_AI_KEY && (
-                  <>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <div className="flex items-center gap-2 group cursor-pointer">
-                          <span className={`text-xs font-medium transition-colors ${aiEnabled ? "text-primary" : "text-muted-foreground group-hover:text-foreground"}`}>AI Mode</span>
-                          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                            <Switch
-                              checked={aiEnabled}
-                              onCheckedChange={setAiEnabled}
-                              className={`data-[state=checked]:bg-primary transition-all ${aiEnabled ? "shadow-md shadow-primary/30" : ""}`}
-                            />
-                          </motion.div>
-                        </div>
-                      </TooltipTrigger>
-                      <TooltipContent side="top" className="text-xs max-w-[200px]">
-                        <p>AI-powered search with detailed explanations and medical insights</p>
-                      </TooltipContent>
-                    </Tooltip>
-                    {aiEnabled && (
-                      <Select value={selectedModel} onValueChange={setSelectedModel}>
-                        <SelectTrigger className="h-7 w-[130px] text-xs">
-                          <SelectValue placeholder="Select model" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {GROQ_MODELS.map((model) => (
-                            <SelectItem key={model} value={model} className="text-xs ">
-                              {model}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    )}
-                  </>
-                )}
-                <button
-                  type="submit"
-                  disabled={!input.trim() || isLoading}
-                  className="w-8 h-8 rounded-xl bg-primary text-primary-foreground flex items-center justify-center disabled:opacity-30 hover:opacity-90 transition-opacity"
-                >
-                  <ArrowUp className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-          </form>
-                    {aiEnabled && currentModel && (
+          <SearchInput
+            value={input}
+            onChange={setInput}
+            onSubmit={() => handleSearch(input)}
+            placeholder={messages.length > 0 ? "Replay..." : "How can I help you today?"}
+            isLoading={isLoading}
+            aiEnabled={aiEnabled}
+            onAiEnabledChange={setAiEnabled}
+            selectedModel={selectedModel}
+            onSelectedModelChange={setSelectedModel}
+            hasAiKey={HAS_AI_KEY}
+          />
+          {aiEnabled && currentModel && (
             <div className="flex items-center justify-center gap-2 mt-1">
               <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
               <p className="text-[10px] text-muted-foreground">
