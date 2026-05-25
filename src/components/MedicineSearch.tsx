@@ -164,24 +164,6 @@ const findAllMedicines = async (query: string): Promise<Medicine[]> => {
   }
 };
 
-const MarkdownContent = ({ content }: { content: string }) => {
-  const parts = content.split(/(\*\*[^*]+\*\*)/g);
-  
-  return (
-    <div className="text-sm text-foreground leading-relaxed space-y-2">
-      {parts.map((part, idx) => {
-        if (part.startsWith("**") && part.endsWith("**")) {
-          return <strong key={idx} className="font-bold">{part.replace(/\*\*/g, "")}</strong>;
-        }
-        if (part.trim()) {
-          return <span key={idx}>{part}</span>;
-        }
-        return null;
-      })}
-    </div>
-  );
-};
-
 const StyledResponse = ({ content }: { content: string }) => {
   const renderBold = (text: string, key: number | string) => {
     const parts = text.split(/(\*\*[^*]+\*\*)/g);
