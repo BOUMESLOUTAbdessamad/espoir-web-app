@@ -6,7 +6,7 @@ export interface ChatMessage {
   content: string;
 }
 
-export interface OpenRouterOptions {
+interface OpenRouterOptions {
   model?: string;
   apiKey?: string;
 }
@@ -24,7 +24,7 @@ export const GROQ_MODELS = [
   "mixtral-8x7b-32768",
 ];
 
-export const MEDICAL_SYSTEM_PROMPT = `You are Avicenna, a medical/pharmacy assistant built by Espoir.
+const MEDICAL_SYSTEM_PROMPT = `You are Avicenna, a medical/pharmacy assistant built by Espoir.
 
 On greeting: respond warmly, introduce yourself as Avicenna, and ask how you can help.
 
@@ -184,7 +184,7 @@ export async function chatWithAI(
   throw new Error("No API key configured. Add VITE_OPENROUTER_API_KEY or VITE_GROQ_API_KEY to .env");
 }
 
-export function buildMedicalPrompt(userQuery: string, medicineInfo?: {
+function buildMedicalPrompt(userQuery: string, medicineInfo?: {
   name: string;
   dci?: string;
   mark?: string;
