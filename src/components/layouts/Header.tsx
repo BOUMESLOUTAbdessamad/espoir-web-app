@@ -1,3 +1,4 @@
+import { Show, SignInButton, SignUpButton, UserButton } from "@clerk/react";
 import { Menu } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -25,6 +26,16 @@ const Header = ({ setSidebarOpen, hasSideBar }: { setSidebarOpen: () => void, ha
                     {/* <span className="text-gradient">AI</span> */}
                 </h1>
             </Link>
+
+            <div className="ml-auto flex items-center gap-2">
+                <Show when="signed-out">
+                    <SignInButton />
+                    <SignUpButton />
+                </Show>
+                <Show when="signed-in">
+                    <UserButton />
+                </Show>
+            </div>
         </header>
     );
 };
