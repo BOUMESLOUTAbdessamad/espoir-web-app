@@ -26,7 +26,7 @@ const features = [
   },
 ];
 
-const Home = () => {
+const Home = ({ onToggleChat }: { onToggleChat?: () => void }) => {
 const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
@@ -43,7 +43,7 @@ const [sidebarOpen, setSidebarOpen] = useState(false);
             </h1>
           </div>
         </header> */}
-        <Header setSidebarOpen={() => setSidebarOpen(true)} hasSideBar={false} />
+        <Header setSidebarOpen={() => setSidebarOpen(true)} hasSideBar={false} onToggleChat={onToggleChat} />
         {/* Hero */}
         <main className="flex-1 flex flex-col items-center justify-center px-5 text-center gap-6">
           <motion.div
