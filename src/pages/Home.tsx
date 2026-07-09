@@ -1,11 +1,11 @@
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Search, Pill, MapPin, Bot, Sparkles } from "lucide-react";
 import { GradientText } from "@/components/animate-ui/primitives/texts/gradient";
 import BubbleBackground from "@/components/BubbleBackground";
-import logo from "@/assets/logo.jpg";
 import Header from "@/components/layouts/Header";
 import { useState } from "react";
+import { useAuth, useClerk } from "@clerk/react";
 
 // const features = [
 const features = [
@@ -28,6 +28,17 @@ const features = [
 
 const Home = ({ onToggleChat }: { onToggleChat?: () => void }) => {
 const [sidebarOpen, setSidebarOpen] = useState(false);
+const { isSignedIn } = useAuth();
+const clerk = useClerk();
+const navigate = useNavigate();
+
+const handleGetStarted = () => {
+  if (isSignedIn) {
+    navigate("/search");
+  } else {
+    clerk.redirectToSignIn({ redirectUrl: "/search" });
+  }
+};
 
   return (
     <>
@@ -74,13 +85,13 @@ const [sidebarOpen, setSidebarOpen] = useState(false);
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
           >
-            <Link
-              to="/search"
+            <button
+              onClick={handleGetStarted}
               className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-primary text-primary-foreground font-semibold text-base shadow-glow hover:opacity-90 transition-opacity"
             >
               <Search className="w-5 h-5" />
-              Start Searching
-            </Link>
+              Get Started
+            </button>
           </motion.div>
 
           {/* Features */}
