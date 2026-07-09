@@ -370,31 +370,31 @@ const FloatingChat = ({ isOpen, onClose }: FloatingChatProps) => {
           style={{ maxHeight: "min(600px, calc(100vh - 1rem))" }}
         >
           {/* Header */}
-          <div className="flex items-center gap-2 px-4 py-3 border-b shrink-0 bg-gradient-to-r from-primary/10 to-primary/5">
+          <div className={`flex items-center gap-2 px-4 py-3 border-b shrink-0 ${!isMinimized ? "bg-gradient-to-r from-primary/10 to-primary/5" : "bg-primary"}`}>
             <div className="w-6 h-6 rounded-lg bg-gradient-warm flex items-center justify-center">
               <Bot className="w-3.5 h-3.5 text-primary-foreground" />
             </div>
-            <span className="text-sm font-semibold flex-1">Avicenna AI</span>
+            <span className={`text-sm font-semibold flex-1 ${isMinimized ? "text-white" : ""}`}>Avicenna AI</span>
             {isMinimized ? (
               <button
                 onClick={() => setIsMinimized(false)}
-                className="w-6 h-6 rounded-lg hover:bg-muted flex items-center justify-center transition-colors"
+                className="w-6 h-6 rounded-lg hover:bg-primary/10 flex items-center justify-center transition-colors"
               >
-                <Sparkles className="w-3.5 h-3.5 text-muted-foreground" />
+                <Sparkles className={`w-3.5 h-3.5 text-muted-foreground ${isMinimized ? "text-white" : ""}`} />
               </button>
             ) : (
               <button
                 onClick={() => setIsMinimized(true)}
                 className="w-6 h-6 rounded-lg hover:bg-muted flex items-center justify-center transition-colors"
               >
-                <Minus className="w-3.5 h-3.5 text-muted-foreground" />
+                <Minus className={`w-3.5 h-3.5 text-muted-foreground `} />
               </button>
             )}
             <button
               onClick={onClose}
-              className="w-6 h-6 rounded-lg hover:bg-muted flex items-center justify-center transition-colors"
+              className={`w-6 h-6 rounded-lg hover:bg-muted flex items-center justify-center transition-colors ${isMinimized ? "text-white" : ""}`}
             >
-              <X className="w-3.5 h-3.5 text-muted-foreground" />
+              <X className={`w-3.5 h-3.5 text-muted-foreground ${isMinimized ? "text-white" : ""}`} />
             </button>
           </div>
 
