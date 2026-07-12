@@ -100,7 +100,7 @@ const Index = ({ onToggleChat }: { onToggleChat?: () => void }) => {
   return (
     <>
       <BubbleBackground />
-      <div className="min-h-screen max-w-7xl mx-auto px-4">
+      <div className="min-h-screen max-w-3xl mx-auto px-4">
         <Header
           setSidebarOpen={() => {}}
           hasSideBar={false}
