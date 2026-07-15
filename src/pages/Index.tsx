@@ -5,9 +5,14 @@ import BubbleBackground from "@/components/BubbleBackground";
 import Header from "@/components/layouts/Header";
 import { chatWithAI, ChatMessage } from "@/services/openrouter";
 import { Medicine } from "@/Types/MainTypes";
+import MedicineCard from "@/components/MedicineCard";
 
-const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL ?? "http://localhost:5000/api/v1").replace(/\/$/, "");
-const HAS_AI_KEY = Boolean(import.meta.env.VITE_OPENROUTER_API_KEY || import.meta.env.VITE_GROQ_API_KEY);
+const API_BASE_URL = (
+  import.meta.env.VITE_API_BASE_URL ?? "http://localhost:5000/api/v1"
+).replace(/\/$/, "");
+const HAS_AI_KEY = Boolean(
+  import.meta.env.VITE_OPENROUTER_API_KEY || import.meta.env.VITE_GROQ_API_KEY,
+);
 
 const getMedicinesFromPayload = (payload: unknown): Medicine[] => {
   if (Array.isArray(payload)) return payload as Medicine[];
@@ -41,12 +46,16 @@ const findAllMedicines = async (query: string): Promise<Medicine[]> => {
     const payload = (await res.json()) as unknown;
     const medicines = getMedicinesFromPayload(payload);
     const exact = medicines.filter((med) => {
-      const v = [med.mark, med.dci, med.name].filter(Boolean).map((s) => String(s).toLowerCase());
+      const v = [med.mark, med.dci, med.name]
+        .filter(Boolean)
+        .map((s) => String(s).toLowerCase());
       return v.includes(trimmed.toLowerCase());
     });
     if (exact.length > 0) return exact;
     return medicines.filter((med) => {
-      const v = [med.mark, med.dci, med.name].filter(Boolean).map((s) => String(s).toLowerCase());
+      const v = [med.mark, med.dci, med.name]
+        .filter(Boolean)
+        .map((s) => String(s).toLowerCase());
       return v.some((s) => s.includes(trimmed.toLowerCase()));
     });
   } catch {
@@ -75,18 +84,36 @@ const Index = ({ onToggleChat }: { onToggleChat?: () => void }) => {
       setMedicines(results);
 
       if (results.length > 0 && HAS_AI_KEY) {
-        const names = results.slice(0, 5).map((m) => m.mark || m.name || m.dci || "Unknown").filter(Boolean).join(", ");
-        const dcis = results.slice(0, 3).map((m) => m.dci).filter(Boolean).join(", ");
+        const names = results
+          .slice(0, 5)
+          .map((m) => m.mark || m.name || m.dci || "Unknown")
+          .filter(Boolean)
+          .join(", ");
+        const dcis = results
+          .slice(0, 3)
+          .map((m) => m.dci)
+          .filter(Boolean)
+          .join(", ");
         const context = `Search query: "${q}". Found medicines: ${names}.${dcis ? " DCI/INN: " + dcis : ""}. Give an AI Overview.`;
         const messages: ChatMessage[] = [
-          { role: "system", content: "You are Avicenna, a helpful medical assistant. Provide a concise, factual AI overview in 2-3 sentences about the medicines found. Use plain English only. Never use markdown. Always remind the user to consult a healthcare professional for medical advice." },
+          {
+            role: "system",
+            content:
+              "You are Avicenna, a helpful medical assistant. Provide a concise, factual AI overview in 2-3 sentences about the medicines found. Use plain English only. Never use markdown. Always remind the user to consult a healthcare professional for medical advice.",
+          },
           { role: "user", content: context },
         ];
         const { content } = await chatWithAI(messages);
         setAiOverview(content);
       } else if (results.length > 0) {
-        const labels = results.slice(0, 5).map((m) => m.mark || m.name || m.dci).filter(Boolean).join(", ");
-        setAiOverview(`Found ${results.length} medicine(s) matching "${q}". Showing: ${labels}.`);
+        const labels = results
+          .slice(0, 5)
+          .map((m) => m.mark || m.name || m.dci)
+          .filter(Boolean)
+          .join(", ");
+        setAiOverview(
+          `Found ${results.length} medicine(s) matching "${q}". Showing: ${labels}.`,
+        );
       } else {
         setAiOverview(`No medicines found for "${q}" in the database.`);
       }
@@ -121,7 +148,8 @@ const Index = ({ onToggleChat }: { onToggleChat?: () => void }) => {
                 <Pill className="w-8 h-8 text-primary-foreground" />
               </div>
               <p className="text-muted-foreground text-sm max-w-sm leading-relaxed">
-                Search for any medicine in our database. Get comprehensive information, availability, and AI-powered insights.
+                Search for any medicine in our database. Get comprehensive
+                information, availability, and AI-powered insights.
               </p>
             </motion.div>
           )}
@@ -129,7 +157,9 @@ const Index = ({ onToggleChat }: { onToggleChat?: () => void }) => {
           {isLoading && (
             <div className="flex items-center justify-center py-20">
               <Loader2 className="w-6 h-6 text-primary animate-spin" />
-              <span className="ml-3 text-sm text-muted-foreground">Searching...</span>
+              <span className="ml-3 text-sm text-muted-foreground">
+                Searching...
+              </span>
             </div>
           )}
 
@@ -143,7 +173,9 @@ const Index = ({ onToggleChat }: { onToggleChat?: () => void }) => {
                 <Sparkles className="w-5 h-5 text-primary" />
                 <h3 className="font-bold text-foreground">AI Overview</h3>
               </div>
-              <p className="text-sm text-foreground leading-relaxed">{aiOverview}</p>
+              <p className="text-sm text-foreground leading-relaxed">
+                {aiOverview}
+              </p>
             </motion.div>
           )}
 
@@ -155,37 +187,13 @@ const Index = ({ onToggleChat }: { onToggleChat?: () => void }) => {
             >
               <div className="flex items-center gap-2 mb-4">
                 <BookText className="w-4 h-4" />
-                <span className="text-sm uppercase tracking-wide font-semibold text-muted-foreground">Medicines ({medicines.length})</span>
+                <span className="text-sm uppercase tracking-wide font-semibold text-muted-foreground">
+                  Medicines ({medicines.length})
+                </span>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-                {medicines.map((medicine, idx) => (
-                  <motion.div
-                    key={medicine.id}
-                    initial={{ opacity: 0, y: 15 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: idx * 0.02 }}
-                    className="glass rounded-xl p-4 flex flex-col gap-2 h-full"
-                  >
-                    <div className="w-8 h-8 rounded-xl bg-gradient-warm flex items-center justify-center shrink-0">
-                      <Pill className="w-4 h-4 text-primary-foreground" />
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <p className="text-sm font-semibold text-foreground truncate" title={medicine.mark || medicine.name}>
-                        {medicine.mark || medicine.name || "Unknown"}
-                      </p>
-                      {medicine.dci && (
-                        <p className="text-xs text-muted-foreground truncate mt-0.5" title={medicine.dci}>{medicine.dci}</p>
-                      )}
-                    </div>
-                    {medicine.dosage && (
-                      <span className="text-[10px] px-2 py-0.5 rounded-md bg-secondary text-secondary-foreground self-start">
-                        {medicine.dosage}
-                      </span>
-                    )}
-                    <span className="text-[10px] px-2 py-0.5 rounded-md bg-primary/10 text-primary self-start mt-auto">
-                      #{medicine.id}
-                    </span>
-                  </motion.div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+                {medicines?.map((medicine) => (
+                  <MedicineCard {...medicine} />
                 ))}
               </div>
             </motion.div>
@@ -193,7 +201,9 @@ const Index = ({ onToggleChat }: { onToggleChat?: () => void }) => {
         </main>
 
         <footer className="py-4 text-center shrink-0">
-          <p className="text-[10px] text-muted-foreground">Powered by Espoir AI &mdash; Not a substitute for medical advice</p>
+          <p className="text-[10px] text-muted-foreground">
+            Powered by Espoir &mdash; Not a substitute for medical advice
+          </p>
         </footer>
       </div>
     </>
