@@ -4,6 +4,7 @@ import { Switch } from "@/components/ui/switch";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { GROQ_MODELS } from "@/services/openrouter";
+import VoiceSearchButton from "./VoiceSearchButton";
 
 interface SearchInputProps {
   value: string;
@@ -104,13 +105,16 @@ const SearchInput = ({
               )}
             </>
           )}
-          <button
-            type="submit"
-            disabled={!value.trim() || isLoading}
-            className="w-8 h-8 rounded-xl bg-primary text-primary-foreground flex items-center justify-center disabled:opacity-30 hover:opacity-90 transition-opacity"
-          >
-            <ArrowUp className="w-4 h-4" />
-          </button>
+          <div className="flex items-center gap-1">
+            <VoiceSearchButton onResult={onChange} disabled={isLoading} />
+            <button
+              type="submit"
+              disabled={!value.trim() || isLoading}
+              className="w-8 h-8 rounded-xl bg-primary text-primary-foreground flex items-center justify-center disabled:opacity-30 hover:opacity-90 transition-opacity"
+            >
+              <ArrowUp className="w-4 h-4" />
+            </button>
+          </div>
         </div>
       </div>
     </form>

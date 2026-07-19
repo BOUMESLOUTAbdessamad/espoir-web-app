@@ -1,6 +1,7 @@
 import { Show, SignInButton, SignUpButton, UserButton } from "@clerk/react";
 import { Bot, DotIcon, Menu, Search, Sparkles, X, Loader2 } from "lucide-react";
 import { Link } from "react-router-dom";
+import VoiceSearchButton from "@/components/VoiceSearchButton";
 
 import logo from "@/assets/logo.jpg";
 
@@ -45,24 +46,34 @@ const Header = ({
       {onSearchSubmit && (
         <div className="flex-1 max-w-lg mx-auto">
           <div className="relative">
+            
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+            
             <input
               type="text"
               value={searchValue ?? ""}
               onChange={(e) => onSearchChange?.(e.target.value)}
               onKeyDown={(e) => { if (e.key === "Enter") onSearchSubmit() }}
               placeholder="Search for a medicine..."
-              className="w-full h-9 pl-9 pr-8 rounded-xl bg-muted text-sm text-foreground placeholder:text-muted-foreground border border-border focus:outline-none focus:ring-2 focus:ring-primary/30"
+              className="w-full h-9 pl-9 pr-16 rounded-xl bg-muted text-sm text-foreground placeholder:text-muted-foreground border border-border focus:outline-none focus:ring-2 focus:ring-primary/30"
               disabled={isSearchLoading}
             />
-            {searchValue && (
-              <button
-                onClick={() => onSearchChange?.("")}
-                className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 flex items-center justify-center"
-              >
-                <X className="w-3.5 h-3.5 text-muted-foreground" />
-              </button>
-            )}
+
+            <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
+              {searchValue && (
+                <button
+                  onClick={() => onSearchChange?.("")}
+                  className="w-4 h-4 flex items-center justify-center"
+                >
+                  <X className="w-3.5 h-3.5 text-muted-foreground" />
+                </button>
+              )}
+              <VoiceSearchButton
+                onResult={(text) => onSearchChange?.(text)}
+                disabled={isSearchLoading}
+                className="w-7 h-7"
+              />
+            </div>
           </div>
         </div>
       )}
@@ -93,7 +104,7 @@ const Header = ({
             onClick={onToggleChat}
             className="w-8 h-8 rounded-xl hover:bg-zinc-200 text-primary-foreground flex items-center justify-center hover:opacity-90 transition-opacity"
           >
-            <Sparkles className="w-4 h-4" color="oklch(54.6% 0.245 262.881)"/>
+            <Sparkles className="w-4 h-4 text-primary"/>
           </button>
           <UserButton userProfileMode="modal" />
         </Show>
