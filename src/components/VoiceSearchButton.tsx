@@ -8,9 +8,10 @@ interface VoiceSearchButtonProps {
   onResult: (text: string) => void;
   disabled?: boolean;
   className?: string;
+  onSearchSubmit? : () => void
 }
 
-const VoiceSearchButton = ({ onResult, disabled, className = "" }: VoiceSearchButtonProps) => {
+const VoiceSearchButton = ({ onResult, disabled, className = "", onSearchSubmit}: VoiceSearchButtonProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const {
     isListening,
@@ -36,6 +37,7 @@ const VoiceSearchButton = ({ onResult, disabled, className = "" }: VoiceSearchBu
     if (transcript) {
       onResult(transcript);
       handleClose();
+      onSearchSubmit?.();
     }
   };
 

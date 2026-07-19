@@ -72,6 +72,7 @@ const Header = ({
                 onResult={(text) => onSearchChange?.(text)}
                 disabled={isSearchLoading}
                 className="w-7 h-7"
+                onSearchSubmit={onSearchSubmit}
               />
             </div>
           </div>
@@ -87,7 +88,7 @@ const Header = ({
           <SignUpButton />
         </Show>
         <Show when="signed-in">
-          {onSearchSubmit && (
+         
             <button
               onClick={onSearchSubmit}
               disabled={!searchValue?.trim() || isSearchLoading}
@@ -99,7 +100,7 @@ const Header = ({
                 <Search className="w-4 h-4" />
               )}
             </button>
-          )}
+      
           <button
             onClick={onToggleChat}
             className="w-8 h-8 rounded-xl hover:bg-zinc-200 text-primary-foreground flex items-center justify-center hover:opacity-90 transition-opacity"
