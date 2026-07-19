@@ -93,7 +93,7 @@ const Header = ({
             onClick={onToggleChat}
             className="w-8 h-8 rounded-xl hover:bg-zinc-200 text-primary-foreground flex items-center justify-center hover:opacity-90 transition-opacity"
           >
-            <Sparkles className="w-4 h-4" color="oklch(54.6% 0.245 262.881)"/>
+            <Sparkles className="w-4 h-4 text-primary"/>
           </button>
           <UserButton userProfileMode="modal" />
         </Show>
