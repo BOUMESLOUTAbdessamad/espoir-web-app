@@ -8,6 +8,7 @@ import SearchInput from "./SearchInput";
 const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL ?? "http://127.0.0.1:5000/api/v1").replace(/\/$/, "");
 const OPENROUTER_API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY;
 const HAS_AI_KEY = Boolean(OPENROUTER_API_KEY);
+const DEFAULT_AI_MODEL = GROQ_MODELS[0];
 
 const MOCK_RESPONSES: Record<string, { text: string }> = {
   default: {
@@ -184,9 +185,7 @@ const FloatingChat = ({ isOpen, onClose }: FloatingChatProps) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [aiEnabled, setAiEnabled] = useState(true);
   const [slowSearch, setSlowSearch] = useState(false);
-  const [selectedModel, setSelectedModel] = useState<string>(GROQ_MODELS[0]);
   const [currentModel, setCurrentModel] = useState<string | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [isMinimized, setIsMinimized] = useState(false);
@@ -212,7 +211,7 @@ const FloatingChat = ({ isOpen, onClose }: FloatingChatProps) => {
           { role: "system", content: "Extract the medicine name from the user's query. Return ONLY the exact medicine name, or 'NONE' if no specific medicine is mentioned. Do not include any other text or explanation." },
           { role: "user", content: query },
         ];
-        const { content: extractedName } = await chatWithAI(extractMessages, { model: selectedModel });
+        const { content: extractedName } = await chatWithAI(extractMessages, { model: DEFAULT_AI_MODEL });
         if (extractedName && extractedName !== "NONE") {
           searchQuery = extractedName.trim();
         }
@@ -265,7 +264,7 @@ const FloatingChat = ({ isOpen, onClose }: FloatingChatProps) => {
 
       chatMessages.push({ role: "user", content: query });
 
-      const { content: aiResponse, model } = await chatWithAI(chatMessages, { model: selectedModel });
+      const { content: aiResponse, model } = await chatWithAI(chatMessages, { model: DEFAULT_AI_MODEL });
       setCurrentModel(model);
 
       setMessages((prev) => [
@@ -351,7 +350,7 @@ const FloatingChat = ({ isOpen, onClose }: FloatingChatProps) => {
     setMessages((prev) => [...prev, userMessage]);
     setInput("");
     setIsLoading(true);
-    if (aiEnabled && HAS_AI_KEY) {
+    if (HAS_AI_KEY) {
       await handleAISearch(query);
     } else {
       await handleDbSearch(query);
@@ -559,13 +558,14 @@ const FloatingChat = ({ isOpen, onClose }: FloatingChatProps) => {
                     onSubmit={() => handleSearch(input)}
                     placeholder="Ask about a medicine..."
                     isLoading={isLoading}
-                    aiEnabled={aiEnabled}
-                    onAiEnabledChange={setAiEnabled}
-                    selectedModel={selectedModel}
-                    onSelectedModelChange={setSelectedModel}
+                    aiEnabled
+                    onAiEnabledChange={() => {}}
+                    selectedModel={DEFAULT_AI_MODEL}
+                    onSelectedModelChange={() => {}}
                     hasAiKey={HAS_AI_KEY}
+                    showAiControls={false}
                   />
-                  {aiEnabled && currentModel && (
+                  {currentModel && (
                     <div className="flex items-center justify-center gap-1.5 mt-1">
                       <div className="w-1 h-1 rounded-full bg-emerald-500 animate-pulse" />
                       <p className="text-[9px] text-muted-foreground">

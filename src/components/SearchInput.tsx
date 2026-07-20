@@ -17,6 +17,8 @@ interface SearchInputProps {
   onSelectedModelChange: (model: string) => void;
   hasAiKey: boolean;
   containerClassName?: string;
+  /** When false, hides AI toggle and model picker (AI styling always on). */
+  showAiControls?: boolean;
 }
 
 const SearchInput = ({
@@ -31,17 +33,20 @@ const SearchInput = ({
   onSelectedModelChange,
   hasAiKey,
   containerClassName = "",
+  showAiControls = true,
 }: SearchInputProps) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSubmit();
   };
 
+  const aiActive = showAiControls ? aiEnabled : true;
+
   return (
     <form onSubmit={handleSubmit} className="relative">
       <div
         className={`rounded-3xl shadow-card flex flex-col gap-2 ${
-          aiEnabled ? "ai-border-glow" : "glass"
+          aiActive ? "ai-border-glow" : "glass"
         } ${containerClassName}`}
       >
         <textarea
@@ -58,8 +63,8 @@ const SearchInput = ({
           className="flex-1 bg-transparent px-3 py-3.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none resize-none min-h-[24px] max-h-32 overflow-y-auto"
           disabled={isLoading}
         />
-        <div className="flex items-center justify-between px-2.5 py-2.5">
-          {hasAiKey && (
+        <div className={`flex items-center px-2.5 py-2.5 ${showAiControls && hasAiKey ? "justify-between" : "justify-end"}`}>
+          {showAiControls && hasAiKey && (
             <>
               <Tooltip>
                 <TooltipTrigger asChild>
