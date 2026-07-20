@@ -43,7 +43,7 @@ export const useVoiceSearch = (): UseVoiceSearchReturn => {
     recognition.continuous = false;
     recognition.interimResults = true;
     // recognition.lang = "de-DE";
-    recognition.lang = "en-US";
+    recognition.lang = "fr-FR";
 
     recognition.onstart = () => {
       setIsListening(true);

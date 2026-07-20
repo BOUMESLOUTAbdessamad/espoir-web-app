@@ -111,7 +111,7 @@ const SearchInput = ({
             </>
           )}
           <div className="flex items-center gap-1">
-            <VoiceSearchButton onResult={onChange} disabled={isLoading} />
+            <VoiceSearchButton onResult={onChange} disabled={isLoading} onSearchSubmit={onSubmit} />
             <button
               type="submit"
               disabled={!value.trim() || isLoading}
