@@ -191,7 +191,7 @@ const Index = ({ onToggleChat }: { onToggleChat?: () => void }) => {
                   Medicines ({medicines.length})
                 </span>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                 {medicines?.map((medicine) => (
                   <MedicineCard {...medicine} />
                 ))}

@@ -11,11 +11,11 @@ const MedicineCard = (medicine, idx: number) => {
       initial={{ opacity: 0, y: 15 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: idx * 0.02 }}
-      className="glass rounded-xl p-4 flex flex-col gap-2 h-full"
+      className="shadow-md rounded-xl p-4 flex flex-col gap-2 h-full"
     >
-      <div className="w-8 h-8 rounded-xl bg-gradient-warm flex items-center justify-center shrink-0">
+      {/* <div className="w-8 h-8 rounded-xl bg-gradient-warm flex items-center justify-center shrink-0">
         <Pill className="w-4 h-4 text-primary-foreground" />
-      </div>
+      </div> */}
       <div className="min-w-0 flex-1">
         <p
           className="text-sm font-semibold text-foreground truncate"
@@ -33,13 +33,13 @@ const MedicineCard = (medicine, idx: number) => {
         )}
       </div>
       {medicine?.dosage && (
-        <span className="text-[10px] px-2 py-0.5 rounded-md bg-secondary text-secondary-foreground self-start">
+        <span className="text-[10px] px-2 py-0.5 rounded-md bg-secondary text-secondary-foreground self-start font-bold">
           {medicine?.dosage}
         </span>
       )}
-      <span className="text-[10px] px-2 py-0.5 rounded-md bg-primary/10 text-primary self-start mt-auto">
+      {/* <span className="text-[10px] px-2 py-0.5 rounded-md bg-primary/10 text-primary self-start mt-auto">
         #{medicine?.id}
-      </span>
+      </span> */}
     </motion.div>
   );
 };
