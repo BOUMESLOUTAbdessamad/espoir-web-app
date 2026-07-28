@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { Pill, Sparkles, Loader2, BookText } from "lucide-react";
 import BubbleBackground from "@/components/BubbleBackground";
 import Header from "@/components/layouts/Header";
-import { chatWithAI, ChatMessage } from "@/services/openrouter";
+import { chatWithAI, ChatMessage, AI_OVERVIEW_PROMPT_FR } from "@/services/openrouter";
 import { Medicine } from "@/Types/MainTypes";
 import MedicineCard from "@/components/MedicineCard";
 
@@ -95,14 +95,15 @@ const Index = ({ onToggleChat }: { onToggleChat?: () => void }) => {
           .filter(Boolean)
           .join(", ");
         const context = `Search query: "${q}". Found medicines: ${names}.${dcis ? " DCI/INN: " + dcis : ""}. Give an AI Overview.`;
+
         const messages: ChatMessage[] = [
           {
             role: "system",
-            content:
-              "You are Avicenna, a helpful medical assistant. Provide a concise, factual AI overview in 2-3 sentences about the medicines found. Use plain English only. Never use markdown. Always remind the user to consult a healthcare professional for medical advice.",
+            content: AI_OVERVIEW_PROMPT_FR
           },
           { role: "user", content: context },
         ];
+        
         const { content } = await chatWithAI(messages);
         setAiOverview(content);
       } else if (results.length > 0) {
