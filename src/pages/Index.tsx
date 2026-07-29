@@ -1,11 +1,14 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Pill, Sparkles, Loader2, BookText } from "lucide-react";
+import { Pill, Sparkles, BookText } from "lucide-react";
 import BubbleBackground from "@/components/BubbleBackground";
 import Header from "@/components/layouts/Header";
 import { chatWithAI, ChatMessage, AI_OVERVIEW_PROMPT_FR } from "@/services/openrouter";
 import { Medicine } from "@/Types/MainTypes";
 import MedicineCard from "@/components/MedicineCard";
+import { Skeleton } from "@/components/ui/skeleton";
+import LoadingSkeleton from "@/components/search/LoadingSkeleton";
+import AiOverviewLoadingSkeleton from "@/components/search/AiOverviewLoadingSkeleton";
 
 const API_BASE_URL = (
   import.meta.env.VITE_API_BASE_URL ?? "http://localhost:5000/api/v1"
@@ -69,6 +72,9 @@ const Index = ({ onToggleChat }: { onToggleChat?: () => void }) => {
   const [aiOverview, setAiOverview] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
+    // useEffect(() => {
+    //     console.log(medicines)
+    // }, [])
 
   const handleSearch = async () => {
     const q = searchValue.trim();
@@ -78,11 +84,10 @@ const Index = ({ onToggleChat }: { onToggleChat?: () => void }) => {
     setAiOverview("");
     setMedicines([]);
     setHasSearched(true);
-
     try {
       const results = await findAllMedicines(q);
       setMedicines(results);
-
+      setIsLoading(false);
       if (results.length > 0 && HAS_AI_KEY) {
         const names = results
           .slice(0, 5)
@@ -115,6 +120,7 @@ const Index = ({ onToggleChat }: { onToggleChat?: () => void }) => {
         setAiOverview(
           `Found ${results.length} medicine(s) matching "${q}". Showing: ${labels}.`,
         );
+        
       } else {
         setAiOverview(`No medicines found for "${q}" in the database.`);
       }
@@ -139,6 +145,7 @@ const Index = ({ onToggleChat }: { onToggleChat?: () => void }) => {
           isSearchLoading={isLoading}
         />
         <main className="pb-8">
+
           {!hasSearched && !isLoading && (
             <motion.div
               initial={{ opacity: 0 }}
@@ -155,13 +162,16 @@ const Index = ({ onToggleChat }: { onToggleChat?: () => void }) => {
             </motion.div>
           )}
 
+            {!aiOverview && (
+                    <div className="py-6 space-y-6">
+                <AiOverviewLoadingSkeleton />
+                </div>
+            )}
+
           {isLoading && (
-            <div className="flex items-center justify-center py-20">
-              <Loader2 className="w-6 h-6 text-primary animate-spin" />
-              <span className="ml-3 text-sm text-muted-foreground">
-                Searching...
-              </span>
-            </div>
+            <div className="py-6 space-y-6">
+                <LoadingSkeleton />
+           </div>
           )}
 
           {!isLoading && aiOverview && (
