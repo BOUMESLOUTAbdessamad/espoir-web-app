@@ -12,10 +12,10 @@ interface OpenRouterOptions {
 }
 
 const FREE_MODELS = [
-  "qwen/qwen3-4b:free",
-  "qwen/qwen3-8b:free",
-  "mistralai/mistral-nemo:free",
-  "nvidia/nemotron-3-super-120b-a12b:free"
+  "nvidia/nemotron-3-super-120b-a12b:free",
+  "google/gemma-4-31b-it:free",
+  "google/gemma-4-26b-a4b-it:free",
+  "inclusionai/ling-3.0-flash:free"
 ];
 
 export const GROQ_MODELS = [
@@ -23,7 +23,7 @@ export const GROQ_MODELS = [
   "gemma2-9b-it",
   "mixtral-8x7b-32768",
 ];
-
+export const AI_OVERVIEW_PROMPT_FR = "Vous êtes Avicenne, une assistante médicale dévouée. Fournissez une présentation concise et factuelle des médicaments trouvés, en 2 à 3 phrases en français. Utilisez uniquement un langage clair et simple. N'utilisez jamais le formatage Markdown. Rappelez systématiquement à l'utilisateur de consulter un professionnel de santé pour obtenir un avis médical."
 const MEDICAL_SYSTEM_PROMPT = `You are Avicenna, a medical/pharmacy assistant built by Espoir.
 
 On greeting: respond warmly, introduce yourself as Avicenna, and ask how you can help.

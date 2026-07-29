@@ -373,7 +373,7 @@ const FloatingChat = ({ isOpen, onClose }: FloatingChatProps) => {
             <div className="w-6 h-6 rounded-lg bg-gradient-warm flex items-center justify-center">
               <Bot className="w-3.5 h-3.5 text-primary-foreground" />
             </div>
-            <span className={`text-sm font-semibold flex-1 ${isMinimized ? "text-white" : ""}`}>Avicenna AI</span>
+            <span className={`text-sm font-semibold flex-1 ${isMinimized ? "text-white" : ""}`}>Avicenna</span>
             {isMinimized ? (
               <button
                 onClick={() => setIsMinimized(false)}

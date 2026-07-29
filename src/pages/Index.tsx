@@ -1,11 +1,18 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Pill, Sparkles, Loader2, BookText } from "lucide-react";
+import { Pill, Sparkles, BookText } from "lucide-react";
 import BubbleBackground from "@/components/BubbleBackground";
 import Header from "@/components/layouts/Header";
-import { chatWithAI, ChatMessage } from "@/services/openrouter";
+import {
+  chatWithAI,
+  ChatMessage,
+  AI_OVERVIEW_PROMPT_FR,
+} from "@/services/openrouter";
 import { Medicine } from "@/Types/MainTypes";
 import MedicineCard from "@/components/MedicineCard";
+import { Skeleton } from "@/components/ui/skeleton";
+import LoadingSkeleton from "@/components/search/LoadingSkeleton";
+import AiOverviewLoadingSkeleton from "@/components/search/AiOverviewLoadingSkeleton";
 
 const API_BASE_URL = (
   import.meta.env.VITE_API_BASE_URL ?? "http://localhost:5000/api/v1"
@@ -69,6 +76,9 @@ const Index = ({ onToggleChat }: { onToggleChat?: () => void }) => {
   const [aiOverview, setAiOverview] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
+  // useEffect(() => {
+  //     console.log(medicines)
+  // }, [])
 
   const handleSearch = async () => {
     const q = searchValue.trim();
@@ -78,7 +88,6 @@ const Index = ({ onToggleChat }: { onToggleChat?: () => void }) => {
     setAiOverview("");
     setMedicines([]);
     setHasSearched(true);
-
     try {
       const results = await findAllMedicines(q);
       setMedicines(results);
@@ -95,14 +104,15 @@ const Index = ({ onToggleChat }: { onToggleChat?: () => void }) => {
           .filter(Boolean)
           .join(", ");
         const context = `Search query: "${q}". Found medicines: ${names}.${dcis ? " DCI/INN: " + dcis : ""}. Give an AI Overview.`;
+
         const messages: ChatMessage[] = [
           {
             role: "system",
-            content:
-              "You are Avicenna, a helpful medical assistant. Provide a concise, factual AI overview in 2-3 sentences about the medicines found. Use plain English only. Never use markdown. Always remind the user to consult a healthcare professional for medical advice.",
+            content: AI_OVERVIEW_PROMPT_FR,
           },
           { role: "user", content: context },
         ];
+
         const { content } = await chatWithAI(messages);
         setAiOverview(content);
       } else if (results.length > 0) {
@@ -154,12 +164,10 @@ const Index = ({ onToggleChat }: { onToggleChat?: () => void }) => {
             </motion.div>
           )}
 
-          {isLoading && (
-            <div className="flex items-center justify-center py-20">
-              <Loader2 className="w-6 h-6 text-primary animate-spin" />
-              <span className="ml-3 text-sm text-muted-foreground">
-                Searching...
-              </span>
+          {!aiOverview && isLoading && (
+            <div className="py-6 space-y-6">
+              <AiOverviewLoadingSkeleton />
+              <LoadingSkeleton />
             </div>
           )}
 
@@ -191,7 +199,7 @@ const Index = ({ onToggleChat }: { onToggleChat?: () => void }) => {
                   Medicines ({medicines.length})
                 </span>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                 {medicines?.map((medicine) => (
                   <MedicineCard {...medicine} />
                 ))}
