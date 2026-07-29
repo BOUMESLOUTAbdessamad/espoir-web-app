@@ -162,9 +162,9 @@ const Index = ({ onToggleChat }: { onToggleChat?: () => void }) => {
             </motion.div>
           )}
 
-            {!aiOverview && (
-                    <div className="py-6 space-y-6">
-                <AiOverviewLoadingSkeleton />
+            {!aiOverview && isLoading && (
+                <div className="py-6 space-y-6">
+                    <AiOverviewLoadingSkeleton />
                 </div>
             )}
 
