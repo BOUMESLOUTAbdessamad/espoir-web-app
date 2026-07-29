@@ -3,7 +3,11 @@ import { motion } from "framer-motion";
 import { Pill, Sparkles, BookText } from "lucide-react";
 import BubbleBackground from "@/components/BubbleBackground";
 import Header from "@/components/layouts/Header";
-import { chatWithAI, ChatMessage, AI_OVERVIEW_PROMPT_FR } from "@/services/openrouter";
+import {
+  chatWithAI,
+  ChatMessage,
+  AI_OVERVIEW_PROMPT_FR,
+} from "@/services/openrouter";
 import { Medicine } from "@/Types/MainTypes";
 import MedicineCard from "@/components/MedicineCard";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -72,9 +76,9 @@ const Index = ({ onToggleChat }: { onToggleChat?: () => void }) => {
   const [aiOverview, setAiOverview] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
-    // useEffect(() => {
-    //     console.log(medicines)
-    // }, [])
+  // useEffect(() => {
+  //     console.log(medicines)
+  // }, [])
 
   const handleSearch = async () => {
     const q = searchValue.trim();
@@ -87,7 +91,7 @@ const Index = ({ onToggleChat }: { onToggleChat?: () => void }) => {
     try {
       const results = await findAllMedicines(q);
       setMedicines(results);
-      setIsLoading(false);
+
       if (results.length > 0 && HAS_AI_KEY) {
         const names = results
           .slice(0, 5)
@@ -104,11 +108,11 @@ const Index = ({ onToggleChat }: { onToggleChat?: () => void }) => {
         const messages: ChatMessage[] = [
           {
             role: "system",
-            content: AI_OVERVIEW_PROMPT_FR
+            content: AI_OVERVIEW_PROMPT_FR,
           },
           { role: "user", content: context },
         ];
-        
+
         const { content } = await chatWithAI(messages);
         setAiOverview(content);
       } else if (results.length > 0) {
@@ -120,7 +124,6 @@ const Index = ({ onToggleChat }: { onToggleChat?: () => void }) => {
         setAiOverview(
           `Found ${results.length} medicine(s) matching "${q}". Showing: ${labels}.`,
         );
-        
       } else {
         setAiOverview(`No medicines found for "${q}" in the database.`);
       }
@@ -145,7 +148,6 @@ const Index = ({ onToggleChat }: { onToggleChat?: () => void }) => {
           isSearchLoading={isLoading}
         />
         <main className="pb-8">
-
           {!hasSearched && !isLoading && (
             <motion.div
               initial={{ opacity: 0 }}
@@ -162,16 +164,11 @@ const Index = ({ onToggleChat }: { onToggleChat?: () => void }) => {
             </motion.div>
           )}
 
-            {!aiOverview && isLoading && (
-                <div className="py-6 space-y-6">
-                    <AiOverviewLoadingSkeleton />
-                </div>
-            )}
-
-          {isLoading && (
+          {!aiOverview && isLoading && (
             <div className="py-6 space-y-6">
-                <LoadingSkeleton />
-           </div>
+              <AiOverviewLoadingSkeleton />
+              <LoadingSkeleton />
+            </div>
           )}
 
           {!isLoading && aiOverview && (
