@@ -114,7 +114,12 @@ const MedicineCard = ({ medicine, idx }: MedicineCardProps) => {
               </div>
             ))}
           </div>
-        ) : null}
+        ) : (
+          <div className="flex items-center gap-1 text-[10px] text-red-700">
+            <MapPin className="w-3 h-3 text-red-700" />
+            Unavailable or Out of stock
+          </div>
+        )}
       </div>
     </motion.div>
   );
