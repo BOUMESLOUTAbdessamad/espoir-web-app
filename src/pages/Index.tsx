@@ -10,7 +10,6 @@ import {
 } from "@/services/openrouter";
 import { Medicine } from "@/Types/MainTypes";
 import MedicineCard from "@/components/MedicineCard";
-import { Skeleton } from "@/components/ui/skeleton";
 import LoadingSkeleton from "@/components/search/LoadingSkeleton";
 import AiOverviewLoadingSkeleton from "@/components/search/AiOverviewLoadingSkeleton";
 
@@ -200,8 +199,8 @@ const Index = ({ onToggleChat }: { onToggleChat?: () => void }) => {
                 </span>
               </div>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                {medicines?.map((medicine) => (
-                  <MedicineCard {...medicine} />
+                {medicines?.map((medicine, idx) => (
+                  <MedicineCard key={medicine.id} medicine={medicine} idx={idx} />
                 ))}
               </div>
             </motion.div>
