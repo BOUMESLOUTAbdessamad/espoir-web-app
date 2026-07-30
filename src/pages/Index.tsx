@@ -69,7 +69,7 @@ const findAllMedicines = async (query: string): Promise<Medicine[]> => {
   }
 };
 
-const Index = ({ onToggleChat }: { onToggleChat?: () => void }) => {
+const Index = ({ onToggleChat, onMedicinesChange }: { onToggleChat?: () => void; onMedicinesChange?: (medicines: Medicine[]) => void }) => {
   const [searchValue, setSearchValue] = useState("");
   const [medicines, setMedicines] = useState<Medicine[]>([]);
   const [aiOverview, setAiOverview] = useState("");
@@ -90,6 +90,7 @@ const Index = ({ onToggleChat }: { onToggleChat?: () => void }) => {
     try {
       const results = await findAllMedicines(q);
       setMedicines(results);
+      onMedicinesChange?.(results);
 
       if (results.length > 0 && HAS_AI_KEY) {
         const names = results
