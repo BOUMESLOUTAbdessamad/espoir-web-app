@@ -51,9 +51,9 @@ const [sidebarOpen, setSidebarOpen] = useState(false);
             transition={{ delay: 0.15 }}
             className="space-y-3"
           >
-            <GradientText text="Avicenna" neon className="text-5xl font-extrabold" /> 
+            <GradientText text="Espoir" neon className="text-5xl font-extrabold" /> 
             <span className="text-xs font-medium text-blue-500 bg-blue-500/10 px-1.5 rounded-lg">Beta</span>
-            <p className="text-muted-foreground text-base max-w-sm mx-auto leading-relaxed">
+            <p className="text-muted-foreground text-base max-w-md mx-auto leading-relaxed">
               Your AI-powered medicine assistant. Find availability, locate pharmacies, and stay informed — all in one place.
             </p>
           </motion.div>
