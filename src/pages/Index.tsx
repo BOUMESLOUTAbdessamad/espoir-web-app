@@ -156,7 +156,7 @@ const Index = ({ onToggleChat }: { onToggleChat?: () => void }) => {
               <div className="w-16 h-16 rounded-2xl bg-gradient-warm flex flex-col items-center justify-center shadow-glow mb-4">
                 <Pill className="w-8 h-8 text-primary-foreground" />
               </div>
-              <p className="text-muted-foreground text-sm max-w-sm leading-relaxed">
+              <p className="text-muted-foreground text-base max-w-sm leading-relaxed">
                 Search for any medicine in our database. Get comprehensive
                 information, availability, and AI-powered insights.
               </p>
@@ -180,7 +180,7 @@ const Index = ({ onToggleChat }: { onToggleChat?: () => void }) => {
                 <Sparkles className="w-5 h-5 text-primary" />
                 <h3 className="font-bold text-foreground">AI Overview</h3>
               </div>
-              <p className="text-sm text-foreground leading-relaxed">
+              <p className="text-base text-foreground leading-relaxed">
                 {aiOverview}
               </p>
             </motion.div>
@@ -194,7 +194,7 @@ const Index = ({ onToggleChat }: { onToggleChat?: () => void }) => {
             >
               <div className="flex items-center gap-2 mb-4">
                 <BookText className="w-4 h-4" />
-                <span className="text-sm uppercase tracking-wide font-semibold text-muted-foreground">
+                <span className="text-base uppercase tracking-wide font-semibold text-muted-foreground">
                   Medicines ({medicines.length})
                 </span>
               </div>
@@ -208,7 +208,7 @@ const Index = ({ onToggleChat }: { onToggleChat?: () => void }) => {
         </main>
 
         <footer className="py-4 text-center shrink-0">
-          <p className="text-[10px] text-muted-foreground">
+          <p className="text-xs text-muted-foreground">
             Powered by Espoir &mdash; Not a substitute for medical advice
           </p>
         </footer>

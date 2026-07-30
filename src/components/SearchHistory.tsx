@@ -32,7 +32,7 @@ const SearchHistory = ({ history, onSelect, onClear, onRemove, isOpen, onClose }
             <div className="flex items-center justify-between px-4 py-4 border-b border-border">
               <div className="flex items-center gap-2">
                 <History className="w-4 h-4 text-primary" />
-                <span className="text-sm font-semibold text-foreground">Search History</span>
+                <span className="text-base font-semibold text-foreground">Search History</span>
               </div>
               <button onClick={onClose} className="w-7 h-7 rounded-lg hover:bg-muted flex items-center justify-center transition-colors">
                 <X className="w-4 h-4 text-muted-foreground" />
@@ -43,7 +43,7 @@ const SearchHistory = ({ history, onSelect, onClear, onRemove, isOpen, onClose }
               {history.length === 0 ? (
                 <div className="flex flex-col items-center justify-center h-full text-center px-6 gap-2">
                   <MessageSquare className="w-8 h-8 text-muted-foreground/30" />
-                  <p className="text-xs text-muted-foreground">No search history yet</p>
+                  <p className="text-sm text-muted-foreground">No search history yet</p>
                 </div>
               ) : (
                 <div className="space-y-0.5 px-2">
@@ -60,7 +60,7 @@ const SearchHistory = ({ history, onSelect, onClear, onRemove, isOpen, onClose }
                       }}
                     >
                       <MessageSquare className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
-                      <span className="text-sm text-foreground truncate flex-1">{query}</span>
+                      <span className="text-base text-foreground truncate flex-1">{query}</span>
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
@@ -80,7 +80,7 @@ const SearchHistory = ({ history, onSelect, onClear, onRemove, isOpen, onClose }
               <div className="px-4 py-3 border-t border-border">
                 <button
                   onClick={onClear}
-                  className="flex items-center gap-2 text-xs text-muted-foreground hover:text-destructive transition-colors w-full justify-center py-1.5"
+                  className="flex items-center gap-2 text-sm text-muted-foreground hover:text-destructive transition-colors w-full justify-center py-1.5"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
                   Clear all history

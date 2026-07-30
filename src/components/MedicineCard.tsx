@@ -65,14 +65,14 @@ const MedicineCard = ({ medicine, idx }: MedicineCardProps) => {
     >
       <div className="min-w-0 flex-1">
         <p
-          className="text-sm font-semibold text-foreground truncate"
+          className="text-base font-semibold text-foreground truncate"
           title={medicine?.mark || medicine?.name}
         >
           {medicine?.mark || medicine?.name || "Unknown"}
         </p>
         {medicine?.dci && (
           <p
-            className="text-xs text-muted-foreground truncate mt-0.5"
+            className="text-sm text-muted-foreground truncate mt-0.5"
             title={medicine?.dci}
           >
             {medicine?.dci}
@@ -80,26 +80,26 @@ const MedicineCard = ({ medicine, idx }: MedicineCardProps) => {
         )}
       </div>
       {medicine?.dosage && (
-        <span className="text-[10px] px-2 py-0.5 rounded-md bg-secondary text-secondary-foreground self-start font-bold">
+        <span className="text-xs px-2 py-0.5 rounded-md bg-secondary text-secondary-foreground self-start font-bold">
           {medicine?.dosage}
         </span>
       )}
 
       <div className="mt-auto pt-2 border-t border-border/50">
         {isLoadingPharm ? (
-          <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
+          <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
             <Loader2 className="w-3 h-3 animate-spin" />
             Loading pharmacies...
           </div>
         ) : pharmacies.length > 0 ? (
           <div className="space-y-1.5">
-            <div className="flex items-center gap-1 text-[10px] font-semibold text-muted-foreground">
+            <div className="flex items-center gap-1 text-xs font-semibold text-muted-foreground">
               <MapPin className="w-3 h-3 text-primary" />
               Available ({pharmacies.length})
             </div>
             {pharmacies.map((pharmacy) => (
               <div key={pharmacy.id} className="flex items-center justify-between gap-1">
-                <span className="text-[10px] text-foreground truncate">{pharmacy.name}</span>
+                <span className="text-xs text-foreground truncate">{pharmacy.name}</span>
                 {pharmacy.lat && pharmacy.lng && (
                   <a
                     href={`https://www.google.com/maps/dir/?api=1&destination=${pharmacy.lat},${pharmacy.lng}`}
@@ -115,7 +115,7 @@ const MedicineCard = ({ medicine, idx }: MedicineCardProps) => {
             ))}
           </div>
         ) : (
-          <div className="flex items-center gap-1 text-[10px] text-red-700">
+          <div className="flex items-center gap-1 text-xs text-red-700">
             <MapPin className="w-3 h-3 text-red-700" />
             Unavailable or Out of stock
           </div>
