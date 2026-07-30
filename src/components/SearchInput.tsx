@@ -61,7 +61,7 @@ const SearchInput = ({
           }}
           placeholder={placeholder}
           rows={1}
-          className="flex-1 bg-transparent px-3 py-3.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none resize-none min-h-[24px] max-h-32 overflow-y-auto"
+          className="flex-1 bg-transparent px-3 py-3.5 text-base text-foreground placeholder:text-muted-foreground focus:outline-none resize-none min-h-[24px] max-h-32 overflow-y-auto"
           disabled={isLoading}
         />
         <div className={`flex items-center px-2.5 py-2.5 ${showAiControls && hasAiKey ? "justify-between" : "justify-end"}`}>
@@ -71,7 +71,7 @@ const SearchInput = ({
                 <TooltipTrigger asChild>
                   <div className="flex items-center gap-2 group cursor-pointer">
                     <span
-                      className={`text-xs font-medium transition-colors ${
+                      className={`text-sm font-medium transition-colors ${
                         aiEnabled
                           ? "text-primary"
                           : "text-muted-foreground group-hover:text-foreground"
@@ -90,18 +90,18 @@ const SearchInput = ({
                     </motion.div>
                   </div>
                 </TooltipTrigger>
-                <TooltipContent side="top" className="text-xs max-w-[200px]">
+                <TooltipContent side="top" className="text-sm max-w-[200px]">
                   <p>AI-powered search with detailed explanations and medical insights</p>
                 </TooltipContent>
               </Tooltip>
               {aiEnabled && (
                 <Select value={selectedModel} onValueChange={onSelectedModelChange}>
-                  <SelectTrigger className="h-7 w-[130px] text-xs">
+                  <SelectTrigger className="h-7 w-[130px] text-sm">
                     <SelectValue placeholder="Select model" />
                   </SelectTrigger>
                   <SelectContent>
                     {GROQ_MODELS.map((model) => (
-                      <SelectItem key={model} value={model} className="text-xs">
+                      <SelectItem key={model} value={model} className="text-sm">
                         {model}
                       </SelectItem>
                     ))}

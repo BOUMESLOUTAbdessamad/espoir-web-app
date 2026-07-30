@@ -125,7 +125,7 @@ const StyledResponse = ({ content }: { content: string }) => {
       return (
         <ol key={`ol-${key}`} className="list-decimal list-inside space-y-1.5 my-2 ml-4">
           {items.map((item, idx) => (
-            <li key={`${key}-${idx}`} className="text-sm text-foreground leading-relaxed">
+            <li key={`${key}-${idx}`} className="text-base text-foreground leading-relaxed">
               {renderBold(item.text, `${key}-li-${idx}`)}
             </li>
           ))}
@@ -135,7 +135,7 @@ const StyledResponse = ({ content }: { content: string }) => {
     return (
       <ul key={`ul-${key}`} className="list-disc list-inside space-y-1.5 my-2 ml-4">
         {items.map((item, idx) => (
-          <li key={`${key}-${idx}`} className="text-sm text-foreground leading-relaxed">
+          <li key={`${key}-${idx}`} className="text-base text-foreground leading-relaxed">
             {renderBold(item.text, `${key}-li-${idx}`)}
           </li>
         ))}
@@ -165,14 +165,14 @@ const StyledResponse = ({ content }: { content: string }) => {
     } else {
       const list = flushList(); if (list) elements.push(list);
       elements.push(
-        <p key={`p-${i}`} className="text-sm text-foreground leading-relaxed my-2">
+        <p key={`p-${i}`} className="text-base text-foreground leading-relaxed my-2">
           {renderBold(line, `p-${i}`)}
         </p>
       );
     }
   }
   const list = flushList(); if (list) elements.push(list);
-  if (elements.length === 0) return <p className="text-sm text-foreground leading-relaxed">{content}</p>;
+  if (elements.length === 0) return <p className="text-base text-foreground leading-relaxed">{content}</p>;
   return <div className="space-y-1">{elements}</div>;
 };
 
@@ -386,7 +386,7 @@ const FloatingChat = ({ isOpen, onClose, medicines = [] }: FloatingChatProps) =>
             <div className="w-6 h-6 rounded-lg bg-gradient-warm flex items-center justify-center">
               <Bot className="w-3.5 h-3.5 text-primary-foreground" />
             </div>
-            <span className={`text-sm font-semibold flex-1 ${isMinimized ? "text-white" : ""}`}>Avicenna</span>
+            <span className={`text-base font-semibold flex-1 ${isMinimized ? "text-white" : ""}`}>Avicenna</span>
             {isMinimized ? (
               <button
                 onClick={() => setIsMinimized(false)}
@@ -471,7 +471,7 @@ const FloatingChat = ({ isOpen, onClose, medicines = [] }: FloatingChatProps) =>
                               <StyledResponse content={msg.content} />
                               <div className="pt-1.5 mt-2 border-t border-primary/10">
                                 <div className="flex items-center justify-between">
-                                  <p className="text-[10px] text-muted-foreground italic">
+                                  <p className="text-xs text-muted-foreground italic">
                                     * Consult a professional
                                   </p>
                                   <button
@@ -489,25 +489,25 @@ const FloatingChat = ({ isOpen, onClose, medicines = [] }: FloatingChatProps) =>
                             </div>
                           </div>
                         ) : (
-                          <div className="bg-primary text-primary-foreground rounded-2xl rounded-br-md px-3 py-2 text-sm leading-relaxed">
+                          <div className="bg-primary text-primary-foreground rounded-2xl rounded-br-md px-3 py-2 text-base leading-relaxed">
                             {msg.content}
                           </div>
                         )}
 
                         {msg.medicines && (
                           <div className="space-y-1.5">
-                            <div className="flex items-center gap-1.5 text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">
+                            <div className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wide">
                               <Sparkles className="w-3 h-3 text-primary" />
                               Medicines Found
                             </div>
                             {msg.medicines.map((medicine) => (
                               <div key={medicine.id} className="glass rounded-xl p-2.5 flex items-center justify-between gap-2">
                                 <div className="min-w-0 flex-1">
-                                  <div className="text-xs font-medium text-foreground truncate">{medicine.mark || medicine.name || "Unknown"}</div>
-                                  <div className="text-[10px] text-muted-foreground truncate">DCI: {medicine.dci || "N/A"}</div>
-                                  <div className="text-[10px] text-muted-foreground">Dosage: {medicine.dosage || "N/A"}</div>
+                                  <div className="text-sm font-medium text-foreground truncate">{medicine.mark || medicine.name || "Unknown"}</div>
+                                  <div className="text-xs text-muted-foreground truncate">DCI: {medicine.dci || "N/A"}</div>
+                                  <div className="text-xs text-muted-foreground">Dosage: {medicine.dosage || "N/A"}</div>
                                 </div>
-                                <div className="text-[10px] font-medium p-1.5 rounded-lg bg-primary/10 text-primary shrink-0">
+                                <div className="text-xs font-medium p-1.5 rounded-lg bg-primary/10 text-primary shrink-0">
                                   #{medicine.id}
                                 </div>
                               </div>
@@ -517,16 +517,16 @@ const FloatingChat = ({ isOpen, onClose, medicines = [] }: FloatingChatProps) =>
 
                         {msg.pharmacies && (
                           <div className="space-y-1.5">
-                            <div className="flex items-center gap-1.5 text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">
+                            <div className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wide">
                               <MapPin className="w-3 h-3 text-primary" />
                               Available Pharmacies
                             </div>
                             {msg.pharmacies.map((pharmacy) => (
                               <div key={pharmacy.id} className="glass rounded-xl p-2.5 flex items-center justify-between gap-2">
                                 <div className="min-w-0 flex-1">
-                                  <div className="text-xs font-medium text-foreground truncate">{pharmacy.name}</div>
-                                  <div className="text-[10px] text-muted-foreground truncate">{pharmacy.address}</div>
-                                  <div className="text-[10px] text-muted-foreground">{pharmacy.distance}</div>
+                                  <div className="text-sm font-medium text-foreground truncate">{pharmacy.name}</div>
+                                  <div className="text-xs text-muted-foreground truncate">{pharmacy.address}</div>
+                                  <div className="text-xs text-muted-foreground">{pharmacy.distance}</div>
                                 </div>
                                 <div className="flex items-center gap-1.5 shrink-0">
                                   {pharmacy.lat && pharmacy.lng && (
@@ -540,7 +540,7 @@ const FloatingChat = ({ isOpen, onClose, medicines = [] }: FloatingChatProps) =>
                                       <Navigation className="w-3.5 h-3.5" />
                                     </a>
                                   )}
-                                  <div className={`text-[10px] font-medium p-1.5 rounded-lg ${pharmacy.available ? "bg-emerald-100 text-emerald-700" : "bg-red-100 text-red-600"}`}>
+                                  <div className={`text-xs font-medium p-1.5 rounded-lg ${pharmacy.available ? "bg-emerald-100 text-emerald-700" : "bg-red-100 text-red-600"}`}>
                                     {pharmacy.available ? "Available" : "Unavailable"}
                                   </div>
                                 </div>
@@ -572,7 +572,7 @@ const FloatingChat = ({ isOpen, onClose, medicines = [] }: FloatingChatProps) =>
                           />
                         ))}
                         {slowSearch && (
-                          <span className="ml-2 text-muted-foreground text-[10px]">
+                          <span className="ml-2 text-muted-foreground text-xs">
                             Taking longer than usual...
                           </span>
                         )}
@@ -600,7 +600,7 @@ const FloatingChat = ({ isOpen, onClose, medicines = [] }: FloatingChatProps) =>
                   {currentModel && (
                     <div className="flex items-center justify-center gap-1.5 mt-1">
                       <div className="w-1 h-1 rounded-full bg-emerald-500 animate-pulse" />
-                      <p className="text-[9px] text-muted-foreground">
+                      <p className="text-[11px] text-muted-foreground">
                         Using {currentModel}
                       </p>
                     </div>

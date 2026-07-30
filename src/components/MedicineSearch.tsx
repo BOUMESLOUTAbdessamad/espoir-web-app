@@ -190,7 +190,7 @@ const StyledResponse = ({ content }: { content: string }) => {
       return (
         <ol key={`ol-${key}`} className="list-decimal list-inside space-y-1.5 my-2 ml-4">
           {items.map((item, idx) => (
-            <li key={`${key}-${idx}`} className="text-sm text-foreground leading-relaxed">
+            <li key={`${key}-${idx}`} className="text-base text-foreground leading-relaxed">
               {renderBold(item.text, `${key}-li-${idx}`)}
             </li>
           ))}
@@ -200,7 +200,7 @@ const StyledResponse = ({ content }: { content: string }) => {
     return (
       <ul key={`ul-${key}`} className="list-disc list-inside space-y-1.5 my-2 ml-4">
         {items.map((item, idx) => (
-          <li key={`${key}-${idx}`} className="text-sm text-foreground leading-relaxed">
+          <li key={`${key}-${idx}`} className="text-base text-foreground leading-relaxed">
             {renderBold(item.text, `${key}-li-${idx}`)}
           </li>
         ))}
@@ -240,7 +240,7 @@ const StyledResponse = ({ content }: { content: string }) => {
       const list = flushList();
       if (list) elements.push(list);
       elements.push(
-        <p key={`p-${i}`} className="text-sm text-foreground leading-relaxed my-2">
+        <p key={`p-${i}`} className="text-base text-foreground leading-relaxed my-2">
           {renderBold(line, `p-${i}`)}
         </p>
       );
@@ -251,7 +251,7 @@ const StyledResponse = ({ content }: { content: string }) => {
   if (list) elements.push(list);
 
   if (elements.length === 0) {
-    return <p className="text-sm text-foreground leading-relaxed">{content}</p>;
+    return <p className="text-base text-foreground leading-relaxed">{content}</p>;
   }
 
   return <div className="space-y-1">{elements}</div>;
@@ -501,11 +501,11 @@ const MedicineSearch = () => {
               >
               </motion.div>
               <div>
-                <h2 className="text-2xl font-bold mb-2">
-                  <GradientText text="Avicenna" neon className="text-3xl font-bold" />
-                  <span className="text-[10px] font-medium text-blue-500 bg-blue-500/10 px-1.5  rounded-lg">Beta</span>
+                <h2 className="text-3xl font-bold mb-2">
+                  <GradientText text="Avicenna" neon className="text-4xl font-bold" />
+                  <span className="text-xs font-medium text-blue-500 bg-blue-500/10 px-1.5  rounded-lg">Beta</span>
                 </h2>
-                <p className="text-muted-foreground text-lg max-w-md">
+                <p className="text-muted-foreground text-xl max-w-md">
                   Search for any medicine - find availability in nearby pharmacies and Learn More.
                 </p>
               </div>
@@ -514,7 +514,7 @@ const MedicineSearch = () => {
                   <button
                     key={s}
                     onClick={() => handleSearch(s)}
-                    className="px-3 py-1.5 text-sm rounded-full bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground transition-colors"
+                    className="px-3 py-1.5 text-base rounded-full bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground transition-colors"
                   >
                     {s}
                   </button>
@@ -536,7 +536,7 @@ const MedicineSearch = () => {
                   hasAiKey={HAS_AI_KEY}
                   containerClassName="border"
                 />
-                <p className="text-[10px] text-muted-foreground text-center mt-2">
+                <p className="text-xs text-muted-foreground text-center mt-2">
                   Powered by Espoir AI - Not a substitute for medical advice
                 </p>
               </div>
@@ -562,7 +562,7 @@ const MedicineSearch = () => {
                           <StyledResponse content={msg.content} />
                           <div className="pt-2 mt-3 border-t border-primary/10">
                             <div className="flex items-center justify-between">
-                              <p className="text-[10px] text-muted-foreground italic">
+                              <p className="text-xs text-muted-foreground italic">
                                 * Always consult a healthcare professional
                               </p>
                               <button
@@ -581,7 +581,7 @@ const MedicineSearch = () => {
                         </div>
                       </div>
                     ) : (
-                      <div className="bg-primary text-primary-foreground rounded-2xl rounded-br-md px-4 py-2.5 text-sm leading-relaxed">
+                      <div className="bg-primary text-primary-foreground rounded-2xl rounded-br-md px-4 py-2.5 text-base leading-relaxed">
                         {msg.content}
                       </div>
                     )}
@@ -589,19 +589,19 @@ const MedicineSearch = () => {
                     {/* Medicines */}
                     {msg.medicines && (
                       <div className="space-y-2">
-                        <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                        <div className="flex items-center gap-2 text-sm font-semibold text-muted-foreground uppercase tracking-wide">
                           <Sparkles className="w-3.5 h-3.5 text-primary" />
                             Medicines Found
                         </div>
                         {msg.medicines.map((medicine) => (
                           <div key={medicine.id} className="glass rounded-xl p-3 flex items-center justify-between gap-3">
                             <div className="min-w-0 flex-1">
-                              <div className="text-sm font-medium text-foreground truncate">{medicine.mark || medicine.name || "Unknown"}</div>
-                              <div className="text-xs text-muted-foreground truncate">DCI: {medicine.dci || "N/A"}</div>
-                              <div className="text-xs text-muted-foreground mt-0.5"> Dosage: {medicine.dosage || "N/A"}</div>
+                              <div className="text-base font-medium text-foreground truncate">{medicine.mark || medicine.name || "Unknown"}</div>
+                              <div className="text-sm text-muted-foreground truncate">DCI: {medicine.dci || "N/A"}</div>
+                              <div className="text-sm text-muted-foreground mt-0.5"> Dosage: {medicine.dosage || "N/A"}</div>
                             </div>
                             <div className="flex items-center gap-2 shrink-0">
-                              <div className="text-xs font-medium p-2 rounded-lg bg-primary/10 text-primary">
+                              <div className="text-sm font-medium p-2 rounded-lg bg-primary/10 text-primary">
                                 #{medicine.id}
                               </div>
                             </div>
@@ -613,16 +613,16 @@ const MedicineSearch = () => {
                     {/* Pharmacies */}
                     {msg.pharmacies && (
                       <div className="space-y-2">
-                        <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                        <div className="flex items-center gap-2 text-sm font-semibold text-muted-foreground uppercase tracking-wide">
                           <MapPin className="w-3.5 h-3.5 text-primary" />
                             Available Pharmacies 
                         </div>
                         {msg.pharmacies.map((pharmacy) => (
                           <div key={pharmacy.id} className="glass rounded-xl p-3 flex items-center justify-between gap-3">
                             <div className="min-w-0 flex-1">
-                              <div className="text-sm font-medium text-foreground truncate">{pharmacy.name}</div>
-                              <div className="text-xs text-muted-foreground truncate">{pharmacy.address}</div>
-                              <div className="text-xs text-muted-foreground mt-0.5">{pharmacy.distance}</div>
+                              <div className="text-base font-medium text-foreground truncate">{pharmacy.name}</div>
+                              <div className="text-sm text-muted-foreground truncate">{pharmacy.address}</div>
+                              <div className="text-sm text-muted-foreground mt-0.5">{pharmacy.distance}</div>
                             </div>
                             <div className="flex items-center gap-2 shrink-0">
                               {pharmacy.lat && pharmacy.lng && (
@@ -637,7 +637,7 @@ const MedicineSearch = () => {
                                 </a>
                               )}
                               <div
-                                className={`text-xs font-medium p-2 rounded-lg ${
+                                className={`text-sm font-medium p-2 rounded-lg ${
                                   pharmacy.available ? "bg-emerald-100 text-emerald-700" : "bg-red-100 text-red-600"
                                 }`}
                               >
@@ -673,7 +673,7 @@ const MedicineSearch = () => {
                       />
                     ))}
                     {slowSearch && (
-                      <span className="ml-2 text-muted-foreground text-xs">
+                      <span className="ml-2 text-muted-foreground text-sm">
                         Search is taking longer than usual, please wait...
                       </span>
                     )}
@@ -705,12 +705,12 @@ const MedicineSearch = () => {
           {aiEnabled && currentModel && (
             <div className="flex items-center justify-center gap-2 mt-1">
               <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              <p className="text-[10px] text-muted-foreground">
+              <p className="text-xs text-muted-foreground">
                 Using {currentModel}
               </p>
             </div>
           )}
-          <p className="text-[10px] text-muted-foreground text-center mt-2">
+          <p className="text-xs text-muted-foreground text-center mt-2">
             {HAS_AI_KEY ? (
               aiEnabled 
                 ? "AI Search Active - Not a substitute for medical advice" 

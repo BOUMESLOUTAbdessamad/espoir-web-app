@@ -51,9 +51,9 @@ const [sidebarOpen, setSidebarOpen] = useState(false);
             transition={{ delay: 0.15 }}
             className="space-y-3"
           >
-            <GradientText text="Avicenna" neon className="text-4xl font-extrabold" /> 
-            <span className="text-[10px] font-medium text-blue-500 bg-blue-500/10 px-1.5 rounded-lg">Beta</span>
-            <p className="text-muted-foreground text-sm max-w-sm mx-auto leading-relaxed">
+            <GradientText text="Espoir" neon className="text-5xl font-extrabold" /> 
+            <span className="text-xs font-medium text-blue-500 bg-blue-500/10 px-1.5 rounded-lg">Beta</span>
+            <p className="text-muted-foreground text-base max-w-md mx-auto leading-relaxed">
               Your AI-powered medicine assistant. Find availability, locate pharmacies, and stay informed — all in one place.
             </p>
           </motion.div>
@@ -65,7 +65,7 @@ const [sidebarOpen, setSidebarOpen] = useState(false);
           >
             <Link
               to="/search"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-primary text-primary-foreground font-semibold text-base shadow-glow hover:opacity-90 transition-opacity"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-primary text-primary-foreground font-semibold text-lg shadow-glow hover:opacity-90 transition-opacity"
             >
               <Search className="w-5 h-5" />
               Start Searching
@@ -90,8 +90,8 @@ const [sidebarOpen, setSidebarOpen] = useState(false);
                 <div className="w-10 h-10 rounded-xl bg-secondary flex items-center justify-center mx-auto">
                   <f.icon className="w-5 h-5 text-primary" />
                 </div>
-                <h3 className="text-sm font-semibold text-foreground">{f.title}</h3>
-                <p className="text-xs text-muted-foreground leading-relaxed">{f.description}</p>
+                <h3 className="text-base font-semibold text-foreground">{f.title}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">{f.description}</p>
               </motion.div>
             ))}
           </motion.div>
@@ -99,7 +99,7 @@ const [sidebarOpen, setSidebarOpen] = useState(false);
 
         {/* Footer */}
         <footer className="py-4 text-center">
-          <p className="text-[10px] text-muted-foreground">
+          <p className="text-xs text-muted-foreground">
             Powered by Espoir AI — Not a substitute for medical advice
           </p>
         </footer>

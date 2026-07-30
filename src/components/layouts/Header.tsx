@@ -37,7 +37,7 @@ const Header = ({
 
       <Link className="flex items-center gap-2 shrink-0" to="/">
         <img src={logo} alt="Espoir DZ" className="w-9 h-9 rounded-xl" />
-        <h1 className="text-lg font-bold text-foreground">
+        <h1 className="text-xl font-bold text-foreground">
           Espoir
           <span className="text-gradient">AI</span>
         </h1>
@@ -46,16 +46,14 @@ const Header = ({
       {onSearchSubmit && (
         <div className="flex-1 max-w-lg mx-auto">
           <div className="relative">
-            
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
-            
             <input
               type="text"
               value={searchValue ?? ""}
               onChange={(e) => onSearchChange?.(e.target.value)}
               onKeyDown={(e) => { if (e.key === "Enter") onSearchSubmit() }}
               placeholder="Search for a medicine..."
-              className="w-full h-9 pl-9 pr-16 rounded-xl bg-muted text-sm text-foreground placeholder:text-muted-foreground border border-border focus:outline-none focus:ring-2 focus:ring-primary/30"
+              className="w-full h-9 pl-9 pr-16 rounded-xl bg-muted text-base text-foreground placeholder:text-muted-foreground border border-border focus:outline-none focus:ring-2 focus:ring-primary/30"
               disabled={isSearchLoading}
             />
 
